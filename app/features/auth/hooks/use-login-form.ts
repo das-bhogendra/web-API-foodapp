@@ -22,5 +22,11 @@ export function useLoginForm() {
     router.push("/dashboard");
   };
 
-  return { register, handleSubmit, errors, isSubmitting };
+  return {
+    register,
+    handleSubmit,
+    onSubmit, 
+    errors,
+    isSubmitting,
+  };
 }

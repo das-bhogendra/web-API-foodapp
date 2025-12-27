@@ -1,16 +1,22 @@
 'use client';
 
+import Link from "next/link";
 import Button from "../ui/button";
 import Input from "../ui/input";
-import Link from "next/link";
 import { useLoginForm } from "../../features/auth/hooks/use-login-form";
 
 export default function LoginForm() {
-  const { register, handleSubmit, errors, isSubmitting } = useLoginForm();
+  const {
+    register,
+    handleSubmit,
+    onSubmit,
+    errors,
+    isSubmitting,
+  } = useLoginForm();
 
   return (
     <form
-      onSubmit={handleSubmit}
+      onSubmit={handleSubmit(onSubmit)} // ✅ FIX
       className="space-y-3 max-w-md mx-auto"
     >
       <Input
@@ -32,7 +38,7 @@ export default function LoginForm() {
 
       <Link
         href="/auth/register"
-        className="text-blue-600 underline block text-center"
+        className="block text-center text-blue-600 underline"
       >
         Register
       </Link>
