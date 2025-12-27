@@ -1,49 +1,41 @@
 'use client';
 
-import Link from 'next/link';
-import Input from '../ui/input';
-import Button from '../ui/button';
-import { useLoginForm } from '../../features/auth/hooks/use-login-form';
+import Button from "../ui/button";
+import Input from "../ui/input";
+import Link from "next/link";
+import { useLoginForm } from "../../features/auth/hooks/use-login-form";
 
 export default function LoginForm() {
-  const { form, error, handleChange, handleSubmit } = useLoginForm();
+  const { register, handleSubmit, errors, isSubmitting } = useLoginForm();
 
   return (
-    <div className="max-w-md mx-auto p-6 border rounded shadow">
-      <form onSubmit={handleSubmit} className="space-y-3">
-        <Input
-          name="email"
-          placeholder="Email"
-          value={form.email}
-          onChange={handleChange}
-        />
-        <Input
-          name="password"
-          type="password"
-          placeholder="Password"
-          value={form.password}
-          onChange={handleChange}
-        />
+    <form
+      onSubmit={handleSubmit}
+      className="space-y-3 max-w-md mx-auto"
+    >
+      <Input
+        placeholder="Email"
+        {...register("email")}
+        error={errors.email?.message}
+      />
 
-        {error && <p className="text-red-500">{error}</p>}
+      <Input
+        type="password"
+        placeholder="Password"
+        {...register("password")}
+        error={errors.password?.message}
+      />
 
-        <Button>Login</Button>
-      </form>
+      <Button disabled={isSubmitting}>
+        {isSubmitting ? "Logging in..." : "Login"}
+      </Button>
 
-      {/* 👇 Login failed → show register */}
-      {error && (
-        <div className="mt-4 text-center">
-          <p className="text-gray-600">
-            Don’t have an account?
-            <Link
-              href="/auth/register"
-              className="text-blue-600 underline ml-1"
-            >
-              Register here
-            </Link>
-          </p>
-        </div>
-      )}
-    </div>
+      <Link
+        href="/auth/register"
+        className="text-blue-600 underline block text-center"
+      >
+        Register
+      </Link>
+    </form>
   );
 }
