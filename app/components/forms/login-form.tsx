@@ -4,7 +4,6 @@ import Link from "next/link";
 import Button from "../ui/button";
 import Input from "../ui/input";
 import { useLoginForm } from "../../features/auth/hooks/use-login-form";
-
 export default function LoginForm() {
   const {
     register,
