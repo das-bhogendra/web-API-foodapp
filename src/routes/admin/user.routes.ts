@@ -1,23 +1,52 @@
-import { Router, Request, Response } from 'express';
-import { UserController } from '../../controllers/user.controller';
-import { authorizedMiddleware } from '../../middlewares/authorization.middleware';
+import { Router } from "express";
+import { authorizedMiddleware, adminOnlyMiddleware } 
+  from "../../middlewares/authorization.middleware";
+import { uploads } from "../../middlewares/upload.middleware";
+import { UserController } from "../../controllers/admin/user.controller";
 
-const router: Router = Router();
-
+const router = Router();
 const userController = new UserController();
 
+// CREATE user (with image upload)
+router.post(
+  "/",
+  authorizedMiddleware,
+  adminOnlyMiddleware,
+  uploads.single("image"),
+  userController.createUser
+);
 
-router.get('/', userController.getUsers);
+// GET all users
+router.get(
+  "/",
+  authorizedMiddleware,
+  adminOnlyMiddleware,
+  userController.getAllUsers
+);
 
-router.get('/:id', userController.getUserById);
+// GET user by id
+router.get(
+  "/:id",
+  authorizedMiddleware,
+  adminOnlyMiddleware,
+  userController.getUserById
+);
 
-
-router.post('/', userController.createUser);
-
-
-router.put('/:id', userController.updateUser);
+// UPDATE user (with optional image)
+router.put(
+  "/:id",
+  authorizedMiddleware,
+  adminOnlyMiddleware,
+  uploads.single("image"),
+  userController.updateUser
+);
 
 // DELETE user
-router.delete('/:id', userController.deleteUser);
+router.delete(
+  "/:id",
+  authorizedMiddleware,
+  adminOnlyMiddleware,
+  userController.deleteUser
+);
 
 export default router;

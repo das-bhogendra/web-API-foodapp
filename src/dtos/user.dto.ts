@@ -1,16 +1,19 @@
-import { z } from "zod";
+import { email, z } from "zod";
+import { UserSchema } from "../types/user.type";
 
 /**
- * CREATE USER DTO (Register)
+ * CREATE USER DTO
  */
 export const CreateUserDto = z
   .object({
-    username: z.string().min(3, "Username must be at least 3 characters"),
-    email: z.string().email("Invalid email address"),
+    fullName: z.string().min(3, "Full name is required"),
+    username: z.string().min(3, "Username is required"),
+    email: z.string().email("Valid email is required"),
     password: z.string().min(8, "Password must be at least 8 characters"),
-    confirmPassword: z.string().min(8),
-    firstName: z.string().optional(),
-    lastName: z.string().optional(),
+    confirmPassword: z.string().min(8, "Confirm password is required"),
+    role: z.enum(["admin", "user"]).optional(),
+    phoneNumber: z.string().optional(),
+    profilePicture: z.string().url().optional(),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords do not match",
@@ -20,23 +23,17 @@ export const CreateUserDto = z
 export type CreateUserDto = z.infer<typeof CreateUserDto>;
 
 /**
- * UPDATE USER DTO (Partial Update)
+ * UPDATE USER DTO
  */
-export const UpdateUserDto = z.object({
-  username: z.string().min(3).optional(),
-  email: z.string().email().optional(),
-  password: z.string().min(8).optional(),
-  firstName: z.string().optional(),
-  lastName: z.string().optional(),
-});
 
+export const UpdateUserDto = UserSchema.partial();
 export type UpdateUserDto = z.infer<typeof UpdateUserDto>;
 
 /**
  * LOGIN USER DTO
  */
 export const LoginUserDto = z.object({
-  username: z.string().min(3, "Username or email is required"),
+  email: z.string().min(3, "valid email is required"),
   password: z.string().min(8, "Password must be at least 8 characters"),
 });
 

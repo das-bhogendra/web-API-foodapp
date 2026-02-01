@@ -5,50 +5,55 @@ export interface IUserRepository {
   getUserByUsername(username: string): Promise<IUser | null>;
   getUserByEmail(email: string): Promise<IUser | null>;
 
+  // 🔐 AUTH ONLY
+  getAuthUser(identifier: string): Promise<IUser | null>;
+
   getUserById(id: string): Promise<IUser | null>;
   getAllUsers(): Promise<IUser[]>;
   updateOneUser(id: string, data: Partial<IUser>): Promise<IUser | null>;
   deleteOneUser(id: string): Promise<boolean>;
 }
 
+
 export class UserRepository implements IUserRepository {
 
   async createUser(data: Partial<IUser>): Promise<IUser> {
     const user = new UserModel(data);
-    const savedUser = await user.save();
-    return savedUser;
+    return await user.save();
   }
 
   async getUserByEmail(email: string): Promise<IUser | null> {
-    const user = await UserModel.findOne({ email });
-    return user;
+    return await UserModel.findOne({ email });
   }
 
   async getUserByUsername(username: string): Promise<IUser | null> {
-    const user = await UserModel.findOne({ username });
-    return user;
+    return await UserModel.findOne({ username });
+  }
+
+  /**
+   * AUTH QUERY
+   * - Allows login via username OR email
+   * - Includes password for bcrypt comparison
+   */
+  async getAuthUser(identifier: string): Promise<IUser | null> {
+    return await UserModel.findOne({
+      $or: [{ email: identifier }, { username: identifier }],
+    });
   }
 
   async getUserById(id: string): Promise<IUser | null> {
-    const user = await UserModel.findById(id);
-    return user;
+    return await UserModel.findById(id);
   }
 
   async getAllUsers(): Promise<IUser[]> {
-    const users = await UserModel.find();
-    return users;
+    return await UserModel.find();
   }
 
   async updateOneUser(
     id: string,
     data: Partial<IUser>
   ): Promise<IUser | null> {
-    const user = await UserModel.findByIdAndUpdate(
-      id,
-      data,
-      { new: true }
-    );
-    return user;
+    return await UserModel.findByIdAndUpdate(id, data, { new: true });
   }
 
   async deleteOneUser(id: string): Promise<boolean> {

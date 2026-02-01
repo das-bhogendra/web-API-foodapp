@@ -3,16 +3,51 @@ import { User } from "../types/user.type";
 
 const UserSchema = new Schema(
   {
-    username: { type: String, required: true, minlength: 3 },
-    email: { type: String, required: true, unique: true },
-    password: { type: String, required: true, minlength: 6 },
-    firstName: { type: String },
-    lastName: { type: String },
+    fullName: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+
+    username: {
+      type: String,
+      required: true,
+      unique: true,
+      minlength: 3,
+      trim: true,
+    },
+
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      lowercase: true,
+      trim: true,
+    },
+
+    password: {
+      type: String,
+      required: true,
+      minlength: 6,
+    },
+
     role: {
       type: String,
       enum: ["admin", "user"],
+      required: true,
       default: "user",
     },
+
+    phoneNumber: {
+      type: String,
+      trim: true,
+    },
+
+    profilePicture: {
+      type: String, // URL or path
+      default: null,
+    },
+    imageUrl:{type: String, required:false},
   },
   {
     timestamps: true,
