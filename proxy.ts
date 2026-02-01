@@ -4,7 +4,7 @@ const publicPaths = ["/login", "/register", "/forgot-password"];
 const adminPaths = ["/admin"]
 
 export async function proxy(req: NextRequest) {
-    //logics here 
+    
     
     const {pathname} = req.nextUrl; 
     const token = await getAuthToken();
@@ -32,7 +32,7 @@ export async function proxy(req: NextRequest) {
 
 export const config = {
     matcher: [
-        //list of path to apply rules /proxy 
+        
         "/admin/:path*", 
         "/login", 
         "/register"
