@@ -15,9 +15,7 @@ const app: Application = express();
 // ⭐ Use PORT from .env or fallback
 const PORT = process.env.PORT || 5005;
 
-// =======================
-// MIDDLEWARES
-// =======================
+
 
 // Parse JSON body (increase limit if needed)
 app.use(express.json({ limit: "10mb" }));
@@ -40,10 +38,6 @@ app.use("/public", express.static(path.join(__dirname, "../public")));
 
 // Serve uploads folder (Multer images)
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
-
-// =======================
-// ROUTES
-// =======================
 
 // Auth routes (register/login)
 app.use("/api/auth", authRoutes);
