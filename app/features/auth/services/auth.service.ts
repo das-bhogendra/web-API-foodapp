@@ -2,12 +2,29 @@
 
 import { LoginPayload, RegisterPayload } from '../types/auth.types';
 
-export async function loginService(data: LoginPayload) {
-  console.log('LOGIN', data);
-  return { success: true };
-}
+const API_URL = 'http://localhost:5005';
 
-export async function registerService(data: RegisterPayload) {
-  console.log('REGISTER', data);
-  return { success: true };
+export async function loginService(data: LoginPayload) {
+  try {
+    const res = await fetch(`${API_URL}/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include', // 🔥 COOKIE के लिए MUST
+      body: JSON.stringify(data),
+    });
+
+    const result = await res.json();
+
+    if (!res.ok) {
+      return { success: false, message: result.message };
+    }
+
+    return { success: true, user: result.user };
+
+  } catch (err) {
+    console.error(err);
+    return { success: false, message: 'Login failed' };
+  }
 }

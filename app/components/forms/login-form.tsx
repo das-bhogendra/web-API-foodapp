@@ -4,20 +4,12 @@ import Link from "next/link";
 import Button from "../ui/button";
 import Input from "../ui/input";
 import { useLoginForm } from "../../features/auth/hooks/use-login-form";
+
 export default function LoginForm() {
-  const {
-    register,
-    handleSubmit,
-    onSubmit,
-    errors,
-    isSubmitting,
-  } = useLoginForm();
+  const { register, handleSubmit, onSubmit, errors, isSubmitting } = useLoginForm();
 
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)} // ✅ FIX
-      className="space-y-3 max-w-md mx-auto"
-    >
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-3 max-w-md mx-auto">
       <Input
         placeholder="Email"
         {...register("email")}
@@ -31,14 +23,11 @@ export default function LoginForm() {
         error={errors.password?.message}
       />
 
-      <Button disabled={isSubmitting}>
+      <Button type="submit" disabled={isSubmitting}>
         {isSubmitting ? "Logging in..." : "Login"}
       </Button>
 
-      <Link
-        href="/auth/register"
-        className="block text-center text-blue-600 underline"
-      >
+      <Link href="/auth/register" className="block text-center text-blue-600 underline">
         Register
       </Link>
     </form>
