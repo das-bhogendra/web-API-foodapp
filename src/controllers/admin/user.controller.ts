@@ -74,7 +74,7 @@ createUser = async (req: Request, res: Response) => {
     const parsed = CreateUserDto.safeParse(req.body);
     if (!parsed.success) return res.status(400).json({ errors: parsed.error });
 
-    // Add image path if uploaded
+    
     const data = { ...parsed.data, image };
 
     const user = await userService.registerUser(data);
@@ -98,7 +98,8 @@ createUser = async (req: Request, res: Response) => {
     try {
       const users = await userRepo.getAllUsers();
 
-      // Convert _id to string for all users
+      
+      
       const safeUsers = users.map(u => {
         const { _id, password, ...user } = u.toObject();
         user._id = _id.toString();
