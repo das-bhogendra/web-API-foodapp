@@ -17,6 +17,7 @@ router.post(
 );
 
 // GET all users
+
 router.get(
   "/",
   authorizedMiddleware,
