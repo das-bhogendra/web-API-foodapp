@@ -16,7 +16,7 @@ router.post(
   userController.createUser
 );
 
-// GET all users
+
 
 router.get(
   "/",
