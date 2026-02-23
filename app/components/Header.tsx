@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import ThemeToggle from "./ThemeToggle";
-import { useAuth } from "@/app/lib/auth"; // Custom hook for auth state
+import { useAuth } from "@/app/context/AuthContext"; // Updated to use AuthContext
 
 const NAV_LINKS = [
   { href: "/", label: "Home" },
@@ -21,7 +21,7 @@ export default function Header() {
     href === "/" ? pathname === "/" : pathname?.startsWith(href);
 
   return (
-    <header className="sticky top-0 z-50 backdrop-blur supports-[backdrop-filter]:bg-background/80 border-b border-black/10 dark:border-white/10">
+    <header className="fixed top-0 left-0 right-0 w-full z-[9999] pointer-events-auto backdrop-blur supports-[backdrop-filter]:bg-background/80 border-b border-black/10 dark:border-white/10">
       <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" aria-label="Global">
         <div className="flex h-16 items-center justify-between md:grid md:grid-cols-[1fr_auto_1fr] w-full">
           {/* Left: Logo */}
@@ -58,7 +58,7 @@ export default function Header() {
               {user ? (
                 <>
                   <Link
-                    href="/dashboard"
+                    href={user.role === 'admin' ? '/admin/dashboard' : '/user/dashboard'}
                     className="h-9 px-3 inline-flex items-center justify-center rounded-md border border-black/10 dark:border-white/15 text-sm font-medium hover:bg-foreground/5 transition-colors"
                   >
                     Dashboard
@@ -73,13 +73,13 @@ export default function Header() {
               ) : (
                 <>
                   <Link
-                    href="/login"
+                    href="/auth/login"
                     className="h-9 px-3 inline-flex items-center justify-center rounded-md border border-black/10 dark:border-white/15 text-sm font-medium hover:bg-foreground/5 transition-colors"
                   >
                     Log in
                   </Link>
                   <Link
-                    href="/register"
+                    href="/auth/register"
                     className="h-9 px-3 inline-flex items-center justify-center rounded-md bg-foreground text-background text-sm font-semibold hover:opacity-90 transition-opacity"
                   >
                     Sign up
@@ -142,7 +142,7 @@ export default function Header() {
                 {user ? (
                   <>
                     <Link
-                      href="/dashboard"
+                      href={user.role === 'admin' ? '/admin/dashboard' : '/user/dashboard'}
                       className="flex-1 h-9 px-3 inline-flex items-center justify-center rounded-md border border-black/10 dark:border-white/15 text-sm font-medium hover:bg-foreground/5 transition-colors"
                       onClick={() => setOpen(false)}
                     >
@@ -161,14 +161,14 @@ export default function Header() {
                 ) : (
                   <>
                     <Link
-                      href="/login"
+                      href="/auth/login"
                       className="flex-1 h-9 px-3 inline-flex items-center justify-center rounded-md border border-black/10 dark:border-white/15 text-sm font-medium hover:bg-foreground/5 transition-colors"
                       onClick={() => setOpen(false)}
                     >
                       Log in
                     </Link>
                     <Link
-                      href="/register"
+                      href="/auth/register"
                       className="flex-1 h-9 px-3 inline-flex items-center justify-center rounded-md bg-foreground text-background text-sm font-semibold hover:opacity-90 transition-opacity"
                       onClick={() => setOpen(false)}
                     >

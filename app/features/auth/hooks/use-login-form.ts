@@ -6,10 +6,12 @@ import { useRouter } from "next/navigation";
 import { loginSchema, LoginFormData } from "../schema/login.schema";
 import { handleLogin } from "@/app/lib/actions/auth-action";
 import { useAuth } from "@/app/context/AuthContext";
+import { useState } from "react";
 
 export function useLoginForm() {
-  const { checkAuth } = useAuth();
+  const { setUser, setIsAuthenticated } = useAuth();
   const router = useRouter();
+  const [error, setError] = useState<string | null>(null);
 
   const {
     register,
@@ -20,22 +22,27 @@ export function useLoginForm() {
   });
 
   const onSubmit = async (data: LoginFormData) => {
-  try {
-    const response = await handleLogin(data); // API call
-    await checkAuth(); // Update auth state
+    setError(null);
+    try {
+      const response = await handleLogin(data); // API call
+      if (response.success) {
+        setUser(response.data);
+        setIsAuthenticated(true);
 
-    // Redirect based on role
-    if (response?.data?.role === 'admin') {
-      router.replace("/admin/dashboard"); // ✅ correct
-    } else if (response?.data?.role === 'user') {
-      router.replace("/user/dashboard"); // ✅ correct if user dashboard exists
-    } else {
-      router.replace("/"); // fallback if role is unknown
+        // Redirect based on role
+        if (response.data.role === 'admin') {
+          router.replace("/admin/dashboard");
+        } else {
+          router.replace("/user/dashboard");
+        }
+      } else {
+        setError(response.message || "Login failed");
+      }
+    } catch (error) {
+      setError("An unexpected error occurred");
+      console.error("Login failed:", error);
     }
-  } catch (error) {
-    console.error("Login failed:", error);
-  }
-};
+  };
 
 
   return {
@@ -44,5 +51,6 @@ export function useLoginForm() {
     onSubmit,
     errors,
     isSubmitting,
+    error,
   };
 }

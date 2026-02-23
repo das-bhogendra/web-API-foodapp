@@ -14,7 +14,7 @@ export default function BlogsPage() {
       {blogs.map((blog) => (
         <Link
           key={blog.id}
-          href={`/dashboard/blogs/${blog.id}`}
+          href={`/admin/dashboard/blogs/${blog.id}`}
           className="block p-4 border rounded hover:bg-gray-50"
         >
           {blog.title}

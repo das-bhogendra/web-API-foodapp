@@ -1,12 +1,10 @@
-export default async function Page({
-    params
-}: {
-    params: Promise<{ id: string }>;
-}) {
-    const { id } = await params;
+import UpdateUserForm from "../../../dashboard/_components/UpdateUserForm";
+
+export default function Page() {
     return (
-        <div>
-            Edit: {id}
+        <div className="p-4">
+            <h1 className="text-2xl font-bold mb-4">Edit User</h1>
+            <UpdateUserForm />
         </div>
     );
 }

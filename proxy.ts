@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getUserData, getAuthToken } from "./app/lib/cookie";
-const publicPaths = ["/login", "/register", "/forgot-password"];
+const publicPaths = ["/auth/login", "/auth/register", "/auth/forgot-password"];
 const adminPaths = ["/admin"]
 
 export async function proxy(req: NextRequest) {
@@ -16,7 +16,7 @@ export async function proxy(req: NextRequest) {
 
 
     if(!user && !isPublicPath){
-        return NextResponse.redirect(new URL("/login", req.url));
+        return NextResponse.redirect(new URL("/auth/login", req.url));
     }
 
     if(user && token){
@@ -34,8 +34,8 @@ export const config = {
     matcher: [
         
         "/admin/:path*", 
-        "/login", 
-        "/register"
+        "/auth/login", 
+        "/auth/register"
     ] ,
     
 }

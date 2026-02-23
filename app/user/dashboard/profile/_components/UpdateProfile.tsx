@@ -4,10 +4,10 @@ import { Controller, useForm } from "react-hook-form";
 import {  useState, useRef } from "react";
 import Image from "next/image";
 import { toast } from "react-toastify";
-import { handleUpdateProfile } from "@/lib/actions/auth-action";
+import { handleUpdateProfile } from "@/app/lib/actions/auth-action";
 
 import { z } from "zod";
-import { UpdateUserData, updateUserSchema } from "../schema";
+import { UpdateUserData, updateUserSchema } from "./schema";
 
 export default function UpdateUserForm({
     user
@@ -134,7 +134,7 @@ export default function UpdateUserForm({
                             />
                         )}
                     />
-                    {errors.image && <p className="text-sm text-red-600">{errors.image.message}</p>}
+                    {errors.image && <p className="text-sm text-red-600">{typeof errors.image.message === 'string' ? errors.image.message : 'Invalid image'}</p>}
                 </div>
                 <div>
                     <label className="block text-sm font-medium mb-1" htmlFor="username">Username</label>

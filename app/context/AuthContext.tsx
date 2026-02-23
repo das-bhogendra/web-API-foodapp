@@ -1,7 +1,8 @@
 "use client";
 import { createContext, useContext, useState, ReactNode, useEffect } from "react";
-import { clearAuthCookies, getAuthToken, getUserData } from "../lib/cookie";
+import { clearAuthCookies } from "../lib/cookie";
 import { useRouter } from "next/navigation";
+import { whoAmI } from "../lib/api/auth";
 
 interface AuthContextProps {
     isAuthenticated: boolean;
@@ -23,10 +24,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const router = useRouter();
     const checkAuth = async () => {
         try {
-            const token = await getAuthToken();
-            const user = await getUserData();
-            setUser(user);
-            setIsAuthenticated(!!token);
+            const response = await whoAmI();
+            setUser(response.data);
+            setIsAuthenticated(true);
         } catch (err) {
             setIsAuthenticated(false);
             setUser(null);
@@ -44,7 +44,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             await clearAuthCookies();
             setIsAuthenticated(false);
             setUser(null);
-            router.push("/login");
+            router.push("/auth/login");
         } catch (error) {
             console.error("Logout failed:", error);
         }

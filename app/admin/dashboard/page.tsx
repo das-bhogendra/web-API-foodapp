@@ -1,8 +1,21 @@
 "use client";
 
 import Link from "next/link";
+import { useAuth } from "@/app/context/AuthContext";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function DashboardHome() {
+  const { isAuthenticated, loading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!loading && !isAuthenticated) {
+      router.replace("/auth/login");
+    }
+  }, [loading, isAuthenticated, router]);
+
+  if (loading) return <p>Loading...</p>;
   return (
     <div className="space-y-6 p-6">
       <h1 className="text-3xl font-bold">Welcome to FoodApp Dashboard 👋</h1>

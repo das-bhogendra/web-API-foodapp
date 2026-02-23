@@ -6,7 +6,7 @@ import Input from "../ui/input";
 import { useLoginForm } from "../../features/auth/hooks/use-login-form";
 
 export default function LoginForm() {
-  const { register, handleSubmit, onSubmit, errors, isSubmitting } = useLoginForm();
+  const { register, handleSubmit, onSubmit, errors, isSubmitting, error } = useLoginForm();
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-3 max-w-md mx-auto">
@@ -22,6 +22,8 @@ export default function LoginForm() {
         {...register("password")}
         error={errors.password?.message}
       />
+
+      {error && <p className="text-red-500 text-sm">{error}</p>}
 
       <Button type="submit" disabled={isSubmitting}>
         {isSubmitting ? "Logging in..." : "Login"}

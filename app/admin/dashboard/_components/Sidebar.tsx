@@ -4,14 +4,16 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const ADMIN_LINKS = [
-    { href: "/admin", label: "Dashboard"},
+    { href: "/admin/dashboard", label: "Dashboard"},
+    { href: "/admin/dashboard/food", label: "Food Items"},
+    { href: "/admin/orders", label: "Orders"},
     { href: "/admin/users", label: "Users"},
 ];
 
 export default function Sidebar() {
     const pathname = usePathname();
 
-    const isActive = (href: string) => href === "/admin" ? pathname === href : pathname?.startsWith(href);
+    const isActive = (href: string) => href === "/admin/dashboard" ? pathname === href : pathname?.startsWith(href);
 
     return (
         <>
@@ -25,7 +27,7 @@ export default function Sidebar() {
                 z-40 overflow-y-auto`}
             >
                 <div className="p-4 border-b border-gray-200 dark:border-gray-800">
-                    <Link href="/admin" className="flex items-center gap-2">
+                    <Link href="/admin/dashboard" className="flex items-center gap-2">
                         <div className="h-8 w-8 rounded bg-gray-900 dark:bg-white text-white dark:text-gray-900 flex items-center justify-center font-bold">A</div>
                         <span className="font-semibold">Admin Panel</span>
                     </Link>
