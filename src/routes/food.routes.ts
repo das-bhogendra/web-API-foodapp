@@ -14,42 +14,52 @@ import {
   getFoodItemsByType,
   getBestSellerFoodItems,
   getDiscountedFoodItems,
+  getFoodItemById, // ✅ correct name
 } from "../controllers/food.controller";
 
 const router = Router();
 
 // ================= PUBLIC ROUTES =================
+
+// 🔥 Order matters here
+
 router.get("/", getAllFoodItems);
 
-// MUST BE ABOVE /type/:type to prevent route conflicts
 router.get("/best-sellers", getBestSellerFoodItems);
 router.get("/discounted", getDiscountedFoodItems);
+
+// ✅ GET BY ID must be before user/type routes
+router.get("/:id", getFoodItemById);
 
 router.get("/user/:userId", getFoodItemsByUser);
 router.get("/type/:type", getFoodItemsByType);
 
 // ================= AUTH ROUTES =================
-// Only admin can create/update/delete food items
 
-// ✅ Create Food Item with single image upload
+// ✅ Create Food Item
 router.post(
   "/",
   authorizedMiddleware,
   adminOnlyMiddleware,
-  foodUpload.single("foodPhoto"), // ✅ changed here
+  foodUpload.single("foodPhoto"),
   createFoodItem
 );
 
-// ✅ Update Food Item with optional single image upload
+// ✅ Update Food Item
 router.put(
   "/:id",
   authorizedMiddleware,
   adminOnlyMiddleware,
-  foodUpload.single("foodPhoto"), // ✅ changed here
+  foodUpload.single("foodPhoto"),
   updateFoodItem
 );
 
-// Delete Food Item
-router.delete("/:id", authorizedMiddleware, adminOnlyMiddleware, deleteFoodItem);
+// ✅ Delete Food Item
+router.delete(
+  "/:id",
+  authorizedMiddleware,
+  adminOnlyMiddleware,
+  deleteFoodItem
+);
 
 export default router;

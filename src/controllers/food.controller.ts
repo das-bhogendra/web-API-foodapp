@@ -5,9 +5,15 @@ import { CreateFoodItemDto, UpdateFoodItemDto } from "../dtos/food.dto";
 const service = new FoodItemService();
 
 // ================= DEFAULT IMAGE =================
-const DEFAULT_IMAGE_URL =
-  `${process.env.BASE_URL || "http://10.0.2.2:5005"}/public/food_photos/placeholder_food.jpg`;
+const DEFAULT_IMAGE_FILE = "placeholder_food.jpg";
 
+// Function to dynamically get default image URL based on request
+const getDefaultImageUrl = (req: Request) => {
+  const host = req.get("host"); // localhost:5005 or emulator IP
+  return `${req.protocol}://${host}/public/food_photos/${DEFAULT_IMAGE_FILE}`;
+};
+
+// ================= CREATE FOOD ITEM =================
 export const createFoodItem = async (req: Request, res: Response) => {
   try {
     const userId = req.user?._id; // Must come from auth middleware
@@ -15,14 +21,16 @@ export const createFoodItem = async (req: Request, res: Response) => {
       return res.status(401).json({ success: false, message: "Unauthorized" });
     }
 
-    // ✅ Debug (remove later)
+    // Debugging
     console.log("REQ BODY:", req.body);
     console.log("REQ FILE:", req.file);
 
-    // Handle uploaded image OR default
+    // Priority: uploaded file > body.imageUrl > default image
     const imageUrl: string = req.file
       ? `${req.protocol}://${req.get("host")}/public/food_photos/${req.file.filename}`
-      : DEFAULT_IMAGE_URL; // default if no image uploaded
+      : req.body.imageUrl
+      ? req.body.imageUrl
+      : getDefaultImageUrl(req);
 
     const dto: CreateFoodItemDto = {
       ...req.body,
@@ -45,6 +53,8 @@ export const createFoodItem = async (req: Request, res: Response) => {
     });
   }
 };
+
+
 
 // ================= GET ALL FOOD ITEMS =================
 export const getAllFoodItems = async (_req: Request, res: Response) => {
@@ -84,11 +94,13 @@ export const updateFoodItem = async (req: Request, res: Response) => {
     // Ensure client cannot change 'addedBy'
     if ("addedBy" in dto) delete dto.addedBy;
 
-    // Attach new image if uploaded OR default if missing
+    // Priority: uploaded file > body.imageUrl > default image
     if (req.file) {
       dto.imageUrl = `${req.protocol}://${req.get("host")}/public/food_photos/${req.file.filename}`;
-    } else if (!dto.imageUrl) {
-      dto.imageUrl = DEFAULT_IMAGE_URL; // ✅ assign default if missing
+    } else if (req.body.imageUrl) {
+      dto.imageUrl = req.body.imageUrl;
+    } else {
+      dto.imageUrl = getDefaultImageUrl(req);
     }
 
     const updatedItem = await service.updateFoodItem(req.params.id, dto);
@@ -103,6 +115,31 @@ export const updateFoodItem = async (req: Request, res: Response) => {
   }
 };
 
+
+// ================= GET FOOD ITEM BY ID =================
+export const getFoodItemById = async (req: Request, res: Response) => {
+  try {
+    const item = await service.getFoodItemById(req.params.id);
+
+    if (!item) {
+      return res.status(404).json({
+        success: false,
+        message: "Food item not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: item,
+    });
+  } catch (error: any) {
+    return res.status(500).json({
+      success: false,
+      message: "Server Error",
+      error: error.message,
+    });
+  }
+};
 // ================= DELETE FOOD ITEM =================
 export const deleteFoodItem = async (req: Request, res: Response) => {
   try {

@@ -28,14 +28,12 @@ const PORT = process.env.PORT || 5005;
 app.use(express.json({ limit: "10mb" }));
 app.use(cookieParser());
 
-// Enable CORS for frontend
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: ["http://localhost:3000", "http://localhost:3001"],
     credentials: true,
   })
 );
-
 // =======================
 // STATIC FILES
 // =======================

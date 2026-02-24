@@ -1,15 +1,97 @@
+//import jwt from "jsonwebtoken";
+//import { JWT_SECRET } from "../config/config";
+//import { Request, Response, NextFunction } from "express";
+//import { HttpError } from "../errors/http.error";
+//import { UserRepository } from "../repository/user.repository";
+//import { IUser } from "../models/user.model";
+
+//declare global {
+  //namespace Express {
+    //interface Request {
+      //user?: IUser; // original Mongoose ObjectId type
+    //}
+  //}
+//}
+
+//const userRepository = new UserRepository();
+
+// ---------------- AUTHORIZED MIDDLEWARE ----------------
+// export const authorizedMiddleware = async (
+//   req: Request,
+//   res: Response,
+//   next: NextFunction
+// ) => {
+//   try {
+//     const authHeader = req.headers.authorization;
+//     console.log("[AUTH] Auth Header:", authHeader); // 🔹 debug
+
+//     if (!authHeader || !authHeader.startsWith("Bearer ")) {
+//       throw new HttpError(401, "Unauthorized: Header malformed");
+//     }
+
+//     const token = authHeader.split(" ")[1];
+//     if (!token) throw new HttpError(401, "Unauthorized: Token missing");
+
+//     let decodedToken: any;
+//     try {
+//       decodedToken = jwt.verify(token, JWT_SECRET);
+//       console.log("[AUTH] Decoded Token:", decodedToken); // 🔹 debug
+//     } catch (err) {
+//       console.error("[AUTH] JWT Verify Error:", err);
+//       throw new HttpError(401, "Unauthorized: Token invalid or expired");
+//     }
+
+//     if (!decodedToken?.userId) {
+//       throw new HttpError(401, "Unauthorized: Token invalid");
+//     }
+
+//     const user = await userRepository.getUserById(decodedToken.userId);
+//     console.log("[AUTH] User from DB:", user); // 🔹 debug
+
+//     if (!user) throw new HttpError(401, "Unauthorized: User not found");
+
+//     req.user = user; // attach user to request
+//     next();
+//   } catch (error: any) {
+//     console.error("[AUTH] Middleware Error:", error.message);
+//     return res.status(401).json({
+//       success: false,
+//       message: error.message || "Unauthorized",
+//     });
+//   }
+// };
+
+// ---------------- ADMIN ONLY ----------------
+// export const adminOnlyMiddleware = (
+//   req: Request,
+//   res: Response,
+//   next: NextFunction
+// ) => {
+//   console.log("[ADMIN] Checking user role:", req.user?.role); // 🔹 debug
+//   if (req.user?.role === "admin") {
+//     return next();
+//   }
+//   return res.status(403).json({ success: false, message: "Forbidden, Admin only" });
+// };
+
+// ---------------- USER OR ADMIN CHECK (OPTIONAL) ----------------
+// export const userOrAdmin = (req: Request, res: Response, next: NextFunction) => {
+//   console.log("[USER/ADMIN] User present?", !!req.user); // 🔹 debug
+//   if (req.user) return next();
+//   return res.status(403).json({ success: false, message: "Forbidden" });
+// };
+
 import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "../config/config";
 import { Request, Response, NextFunction } from "express";
 import { HttpError } from "../errors/http.error";
 import { UserRepository } from "../repository/user.repository";
 import { IUser } from "../models/user.model";
-import mongoose from "mongoose";
 
 declare global {
   namespace Express {
     interface Request {
-      user?: IUser; // keep original Mongoose ObjectId type
+      user?: IUser;
     }
   }
 }
@@ -23,26 +105,27 @@ export const authorizedMiddleware = async (
   next: NextFunction
 ) => {
   try {
-    const authHeader = req.headers.authorization;
+    // ✅ read token from Authorization header OR cookie
+    const token =
+      req.headers.authorization?.split(" ")[1] || req.cookies.auth_token;
 
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      throw new HttpError(401, "Unauthorized: Header malformed");
-    }
+    if (!token) throw new HttpError(401, "You must be logged in as admin");
 
-    const token = authHeader.split(" ")[1];
-    if (!token) throw new HttpError(401, "Unauthorized: Token missing");
+    // Decode token (using current JWT structure with 'id' instead of 'userId')
+    const decodedToken = jwt.verify(token, JWT_SECRET) as { id: string; role: string };
 
-    const decodedToken = jwt.verify(token, JWT_SECRET) as { id: string };
-    if (!decodedToken?.id) throw new HttpError(401, "Unauthorized: Token invalid");
+    if (!decodedToken?.id)
+      throw new HttpError(401, "Unauthorized: Token invalid");
 
+    // Fetch user by id from token
     const user = await userRepository.getUserById(decodedToken.id);
     if (!user) throw new HttpError(401, "Unauthorized: User not found");
 
-    // ✅ Keep original ObjectId type (no .toString())
-    req.user = user;
+    req.user = user; // attach user to request
 
     next();
   } catch (error: any) {
+    console.error("[AUTH] Middleware Error:", error.message);
     return res.status(401).json({
       success: false,
       message: error.message || "Unauthorized",
@@ -56,15 +139,8 @@ export const adminOnlyMiddleware = (
   res: Response,
   next: NextFunction
 ) => {
-  if (req.user?.role === "admin") {
-    return next();
-  }
-  return res.status(403).json({ success: false, message: "Forbidden, Admin only" });
-};
-
-// ---------------- USER OR ADMIN CHECK (OPTIONAL) ----------------
-export const userOrAdmin = (req: Request, res: Response, next: NextFunction) => {
-  // controller should still check ownership (order.userId) when needed
-  if (req.user) return next();
-  return res.status(403).json({ success: false, message: "Forbidden" });
+  if (req.user?.role === "admin") return next();
+  return res
+    .status(403)
+    .json({ success: false, message: "Forbidden, Admin only" });
 };

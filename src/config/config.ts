@@ -9,7 +9,7 @@ export const PORT: number = process.env.PORT
   : 5005;
 
 // MongoDB Atlas URI
-export const MONGODB_URI: string = process.env.DB_URI!; // ✅ the ! ensures TypeScript knows it's required
+export const MONGODB_URI: string = process.env.MONGODB_URI!; // ✅ the ! ensures TypeScript knows it's required
 
 // JWT Secret
 export const JWT_SECRET: string =

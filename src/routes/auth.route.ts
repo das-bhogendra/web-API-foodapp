@@ -9,5 +9,15 @@ const authController = new AuthController();
 
 router.post("/register", authController.register);
 router.post("/login", authController.login);
-router.put("/profile", authorizedMiddleware, uploads.single('profilePicture'), authController.updateProfile);
+
+// ✅ ADD THIS
+router.get("/whoami", authorizedMiddleware, authController.getProfile);
+
+router.put(
+  "/profile",
+  authorizedMiddleware,
+  uploads.single("profilePicture"),
+  authController.updateProfile
+);
+
 export default router;
