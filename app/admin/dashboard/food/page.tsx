@@ -11,7 +11,7 @@ const AdminFoodPage = () => {
   const fetchFoods = async () => {
     try {
       setLoading(true);
-      const data = await foodApi.getAll();
+      const data = await foodApi.getAll(); // ✅ uses cookies automatically
       setFoods(data);
     } catch (error) {
       console.error("Error fetching foods:", error);
@@ -24,11 +24,10 @@ const AdminFoodPage = () => {
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this food item?")) return;
 
-    const token = localStorage.getItem("token") || "";
-
     try {
-      await foodApi.delete(id, token);
-      fetchFoods();
+      // ✅ no token needed, cookies handle auth
+      await foodApi.delete(id);
+      fetchFoods(); // refresh list
     } catch (error) {
       console.error("Failed to delete food:", error);
       alert("Failed to delete food item");
@@ -70,7 +69,7 @@ const AdminFoodPage = () => {
                 <span>${food.price}</span>
                 <div className="flex gap-2">
                   <Link
-                    href={`/admin/dashboard/food/edit/${food._id}`}
+                    href={`/admin/dashboard/food/edit/${food._id}`} // ✅ edit link
                     className="text-blue-500 text-sm hover:underline"
                   >
                     Edit

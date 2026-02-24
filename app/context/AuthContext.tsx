@@ -22,21 +22,30 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [user, setUser] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const router = useRouter();
+    
     const checkAuth = async () => {
         try {
-            const response = await whoAmI();
-            setUser(response.data);
-            setIsAuthenticated(true);
-        } catch (err) {
+            const userData = await whoAmI();
+            if (userData) {
+                setUser(userData);
+                setIsAuthenticated(true);
+            } else {
+                setUser(null);
+                setIsAuthenticated(false);
+            }
+        } catch (err: any) {
+            console.log("Auth check failed (non-blocking):", err?.message);
             setIsAuthenticated(false);
             setUser(null);
         } finally {
+            // Always set loading to false - this is critical!
             setLoading(false);
         }
     };
 
     useEffect(() => {
         checkAuth();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const logout = async () => {

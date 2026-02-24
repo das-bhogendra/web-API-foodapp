@@ -1,57 +1,54 @@
-// frontend/lib/foodApi.ts
-import axios from "./api/axios"; // ✅ use configured instance
+import axios from "./api/axios"; // configured instance
 import { FoodItem } from "../context/FoodContext";
 import { API } from "./api/endpoints";
 
 export const foodApi = {
   getAll: async (): Promise<FoodItem[]> => {
-    const res = await axios.get(API.USER.FOOD.GET_ALL);
+    const res = await axios.get(API.USER.FOOD.GET_ALL, { withCredentials: true });
     return res.data.data;
   },
 
   getByType: async (type: string): Promise<FoodItem[]> => {
-    const res = await axios.get(`${API.USER.FOOD.GET_BY_TYPE}${type}`);
+    const res = await axios.get(`${API.USER.FOOD.GET_BY_TYPE}${type}`, { withCredentials: true });
     return res.data.data;
   },
 
   getBestSellers: async (): Promise<FoodItem[]> => {
-    const res = await axios.get(API.USER.FOOD.GET_BEST_SELLERS);
+    const res = await axios.get(API.USER.FOOD.GET_BEST_SELLERS, { withCredentials: true });
     return res.data.data;
   },
 
   getDiscounted: async (): Promise<FoodItem[]> => {
-    const res = await axios.get(API.USER.FOOD.GET_DISCOUNTED);
+    const res = await axios.get(API.USER.FOOD.GET_DISCOUNTED, { withCredentials: true });
     return res.data.data;
   },
 
   getById: async (id: string): Promise<FoodItem> => {
-    const res = await axios.get(`${API.ADMIN.FOOD.GET_BY_ID}${id}`);
+    const res = await axios.get(`${API.ADMIN.FOOD.GET_BY_ID}${id}`, {
+      withCredentials: true, // ✅ important for JWT auth
+    });
     return res.data.data;
   },
 
-  create: async (formData: FormData, token: string): Promise<FoodItem> => {
+  create: async (formData: FormData): Promise<FoodItem> => {
     const res = await axios.post(API.ADMIN.FOOD.CREATE, formData, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "multipart/form-data",
-      },
+      headers: { "Content-Type": "multipart/form-data" },
+      withCredentials: true,
     });
     return res.data.data;
   },
 
-  update: async (id: string, formData: FormData, token: string): Promise<FoodItem> => {
+  update: async (id: string, formData: FormData): Promise<FoodItem> => {
     const res = await axios.put(`${API.ADMIN.FOOD.UPDATE}${id}`, formData, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "multipart/form-data",
-      },
+      headers: { "Content-Type": "multipart/form-data" },
+      withCredentials: true,
     });
     return res.data.data;
   },
 
-  delete: async (id: string, token: string): Promise<{ message: string }> => {
+  delete: async (id: string): Promise<{ message: string }> => {
     const res = await axios.delete(`${API.ADMIN.FOOD.DELETE}${id}`, {
-      headers: { Authorization: `Bearer ${token}` },
+      withCredentials: true,
     });
     return res.data;
   },

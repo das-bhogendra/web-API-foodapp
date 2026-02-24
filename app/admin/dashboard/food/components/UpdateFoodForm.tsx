@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { foodApi } from "../../../../lib/foodApi";
-
 import { FoodItem } from "../../../../context/FoodContext";
 
 interface Props {
@@ -17,17 +16,41 @@ export default function UpdateFoodForm({ food, onSuccess }: Props) {
     name: food.name,
     price: food.price,
     type: food.type,
-    available: food.isAvailable,
-    bestSeller: food.isBestSeller,
+    isAvailable: food.isAvailable,
+    isBestSeller: food.isBestSeller,
+    image: null as File | null,
   });
+
+  // ✅ Image Preview
+  const [preview, setPreview] = useState<string>(
+    food.imageUrl
+      ? `${process.env.NEXT_PUBLIC_API_URL}${food.imageUrl}`
+      : "/Food_photos/placeholder_food.jpg"
+  );
 
   const handleChange = (e: any) => {
     const { name, value, type, checked } = e.target;
-
     setFormData((prev) => ({
       ...prev,
       [name]: type === "checkbox" ? checked : value,
     }));
+  };
+
+  const handleImageChange = (e: any) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setFormData((prev) => ({
+      ...prev,
+      image: file,
+    }));
+
+    // ✅ Show preview instantly
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setPreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleSubmit = async (e: any) => {
@@ -35,21 +58,25 @@ export default function UpdateFoodForm({ food, onSuccess }: Props) {
     setLoading(true);
 
     try {
-      // Convert formData to FormData object for API
       const data = new FormData();
       data.append("name", formData.name);
       data.append("price", String(formData.price));
       data.append("type", formData.type);
-      data.append("available", String(formData.available));
-      data.append("bestSeller", String(formData.bestSeller));
-      // You may need to provide a token if required by your API
-      const token = localStorage.getItem("token") || "";
-      await foodApi.update(food._id, data, token);
+      data.append("isAvailable", String(formData.isAvailable));
+      data.append("isBestSeller", String(formData.isBestSeller));
+
+      // ✅ IMPORTANT: backend expects "foodPhoto"
+      if (formData.image) {
+        data.append("foodPhoto", formData.image);
+      }
+
+      await foodApi.update(food._id, data);
+
+      alert("Food item updated successfully!");
       onSuccess?.();
-      alert("Food updated successfully");
-    } catch (error) {
-      console.error(error);
-      alert("Update failed");
+    } catch (error: any) {
+      console.error("Update Food Error:", error);
+      alert(error?.response?.data?.message || "Failed to update food item.");
     } finally {
       setLoading(false);
     }
@@ -61,6 +88,15 @@ export default function UpdateFoodForm({ food, onSuccess }: Props) {
 
       <form onSubmit={handleSubmit} className="space-y-5">
 
+        {/* ✅ Image Preview */}
+        <div className="flex justify-center">
+          <img
+            src={preview}
+            alt="Food Preview"
+            className="w-40 h-40 object-cover rounded-xl border"
+          />
+        </div>
+
         {/* Name */}
         <div>
           <label className="block mb-2 text-sm font-medium">Food Name</label>
@@ -69,7 +105,7 @@ export default function UpdateFoodForm({ food, onSuccess }: Props) {
             name="name"
             value={formData.name}
             onChange={handleChange}
-            className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none"
+            className="w-full px-4 py-2 border rounded-xl"
           />
         </div>
 
@@ -81,7 +117,7 @@ export default function UpdateFoodForm({ food, onSuccess }: Props) {
             name="price"
             value={formData.price}
             onChange={handleChange}
-            className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none"
+            className="w-full px-4 py-2 border rounded-xl"
           />
         </div>
 
@@ -92,7 +128,7 @@ export default function UpdateFoodForm({ food, onSuccess }: Props) {
             name="type"
             value={formData.type}
             onChange={handleChange}
-            className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none"
+            className="w-full px-4 py-2 border rounded-xl"
           >
             <option value="veg">Veg</option>
             <option value="nonVeg">Non-Veg</option>
@@ -102,12 +138,12 @@ export default function UpdateFoodForm({ food, onSuccess }: Props) {
         </div>
 
         {/* Toggles */}
-        <div className="flex items-center gap-6">
+        <div className="flex gap-6">
           <label className="flex items-center gap-2">
             <input
               type="checkbox"
-              name="available"
-              checked={formData.available}
+              name="isAvailable"
+              checked={formData.isAvailable}
               onChange={handleChange}
             />
             Available
@@ -116,19 +152,32 @@ export default function UpdateFoodForm({ food, onSuccess }: Props) {
           <label className="flex items-center gap-2">
             <input
               type="checkbox"
-              name="bestSeller"
-              checked={formData.bestSeller}
+              name="isBestSeller"
+              checked={formData.isBestSeller}
               onChange={handleChange}
             />
             Best Seller
           </label>
         </div>
 
+        {/* Upload */}
+        <div>
+          <label className="block mb-2 text-sm font-medium">
+            Upload New Image
+          </label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+            className="w-full"
+          />
+        </div>
+
         {/* Submit */}
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-indigo-600 text-white py-2 rounded-xl hover:bg-indigo-700 transition-all"
+          className="w-full bg-indigo-600 text-white py-2 rounded-xl hover:bg-indigo-700"
         >
           {loading ? "Updating..." : "Update Food"}
         </button>
