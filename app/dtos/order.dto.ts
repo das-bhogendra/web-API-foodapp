@@ -9,7 +9,7 @@ export interface FoodItemInOrder {
 
 export interface OrderResponseDto {
   id: string;
-  userId: string;
+  userId: { _id: string; email: string }; // change here
   foodItems: FoodItemInOrder[];
   totalAmount: number;
   status: 'pending' | 'confirmed' | 'preparing' | 'ready' | 'delivered' | 'cancelled';

@@ -4,6 +4,7 @@ import { FoodProvider, useFood } from "@/app/context/FoodContext";
 import { CategoryProvider, useCategory } from "../../../context/CategoryContext";
 import FoodList from "./components/FoodList";
 import CategoryFilter from "./components/CategoryFilter";
+import { useCart } from "@/app/context/CartContext";
 
 const FoodPageInner = () => {
   const { foods } = useFood();
@@ -18,29 +19,12 @@ const FoodPageInner = () => {
   useEffect(() => {
     let filtered = foods;
 
-    // Filter by category
-    if (selectedCategory) {
-      filtered = filtered.filter((f) => f.type === selectedCategory);
-    }
-
-    // Filter by type
-    if (selectedType) {
-      filtered = filtered.filter((f) => f.type === selectedType);
-    }
-
-    // Filter by best sellers
-    if (showBestSellers) {
-      filtered = filtered.filter((f) => f.isBestSeller);
-    }
-
-    // Filter by discounted
-    if (showDiscounted) {
-      filtered = filtered.filter((f) => f.isDiscounted);
-    }
-
-    // Filter by search term
+    if (selectedCategory) filtered = filtered.filter(f => f.type === selectedCategory);
+    if (selectedType) filtered = filtered.filter(f => f.type === selectedType);
+    if (showBestSellers) filtered = filtered.filter(f => f.isBestSeller);
+    if (showDiscounted) filtered = filtered.filter(f => f.isDiscounted);
     if (searchTerm) {
-      filtered = filtered.filter((f) =>
+      filtered = filtered.filter(f =>
         f.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         f.description?.toLowerCase().includes(searchTerm.toLowerCase())
       );
@@ -50,20 +34,18 @@ const FoodPageInner = () => {
   }, [selectedCategory, selectedType, showBestSellers, showDiscounted, searchTerm, foods]);
 
   return (
-    <div className="p-4">
-      {/* Search Bar */}
-      <div className="mb-4">
-        <input
-          type="text"
-          placeholder="Search foods..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full p-2 border rounded-lg"
-        />
-      </div>
+    <div>
+      {/* Search */}
+      <input
+        type="text"
+        placeholder="Search foods..."
+        value={searchTerm}
+        onChange={e => setSearchTerm(e.target.value)}
+        className="w-full p-2 border rounded-lg mb-4"
+      />
 
       {/* Filters */}
-      <div className="mb-4 flex flex-wrap gap-4">
+      <div className="flex flex-wrap gap-4 mb-4">
         <CategoryFilter
           categories={categories}
           selectedCategoryId={selectedCategory}
@@ -74,7 +56,7 @@ const FoodPageInner = () => {
           <label className="block text-sm font-medium mb-1">Type</label>
           <select
             value={selectedType}
-            onChange={(e) => setSelectedType(e.target.value)}
+            onChange={e => setSelectedType(e.target.value)}
             className="border p-2 rounded"
           >
             <option value="">All Types</option>
@@ -85,43 +67,41 @@ const FoodPageInner = () => {
           </select>
         </div>
 
-        <div className="flex items-center gap-2">
+        <label className="flex items-center gap-2 text-sm">
           <input
             type="checkbox"
-            id="bestSellers"
             checked={showBestSellers}
-            onChange={(e) => setShowBestSellers(e.target.checked)}
+            onChange={e => setShowBestSellers(e.target.checked)}
           />
-          <label htmlFor="bestSellers" className="text-sm">Best Sellers</label>
-        </div>
+          Best Sellers
+        </label>
 
-        <div className="flex items-center gap-2">
+        <label className="flex items-center gap-2 text-sm">
           <input
             type="checkbox"
-            id="discounted"
             checked={showDiscounted}
-            onChange={(e) => setShowDiscounted(e.target.checked)}
+            onChange={e => setShowDiscounted(e.target.checked)}
           />
-          <label htmlFor="discounted" className="text-sm">Discounted</label>
-        </div>
+          Discounted
+        </label>
       </div>
 
+      {/* Food List */}
       <FoodList foods={filteredFoods} />
     </div>
   );
 };
 
-const FoodPage = () => {
-  return (
-    <CategoryProvider>
-      <FoodProvider>
-        <div className="p-4">
-          <h1 className="text-2xl font-bold mb-4">Our Menu</h1>
-          <FoodPageInner />
-        </div>
-      </FoodProvider>
-    </CategoryProvider>
-  );
-};
+const FoodPage = () => (
+  <CategoryProvider>
+    <FoodProvider>
+      <div className="p-4">
+        <h1 className="text-2xl font-bold mb-4">Our Menu</h1>
+        <FoodPageInner />
+      </div>
+    </FoodProvider>
+  </CategoryProvider>
+);
+
 
 export default FoodPage;

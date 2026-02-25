@@ -35,13 +35,14 @@ export const loginUser = async(loginData: any)=>{
 
 export const whoAmI = async () => {
   try {
-    const response = await axios.get(API.AUTH.WHOAMI);
-    return response.data;
+    const response = await axios.get(API.AUTH.WHOAMI, {
+      withCredentials: true, // important to send cookie
+    });
+    return response.data.user; // return only the user object
   } catch (error: Error | any) {
-    throw new Error(error.response?.data?.message
-      || error.message || 'Whoami failed');
+    throw new Error(error.response?.data?.message || error.message || 'Whoami failed');
   }
-}
+};
 
 export const updateProfile = async (profileData: any) => {
   try {

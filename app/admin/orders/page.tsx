@@ -5,15 +5,17 @@ import OrderList from "./components/OrderList";
 
 const AdminOrdersPageInner = () => {
   const { orders, fetchOrders, editOrder, isLoading } = useOrders();
-  const [filteredOrders, setFilteredOrders] = useState(orders);
+  const [filteredOrders, setFilteredOrders] = useState(orders || []);
   const [statusFilter, setStatusFilter] = useState<string>("");
   const [sortBy, setSortBy] = useState<string>("date");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
+  // Fetch orders on mount
   useEffect(() => {
-    fetchOrders(); // admin fetches all orders
+    fetchOrders();
   }, []);
 
+  // Update filtered orders when orders or filters change
   useEffect(() => {
     let filtered = orders ? [...orders] : [];
 
@@ -36,19 +38,26 @@ const AdminOrdersPageInner = () => {
           aVal = a.id;
           bVal = b.id;
       }
-      if (sortOrder === "asc") {
-        return aVal > bVal ? 1 : -1;
-      } else {
-        return aVal < bVal ? 1 : -1;
-      }
+      return sortOrder === "asc" ? (aVal > bVal ? 1 : -1) : (aVal < bVal ? 1 : -1);
     });
 
     setFilteredOrders(filtered);
   }, [orders, statusFilter, sortBy, sortOrder]);
 
   const handleStatusUpdate = async (orderId: string, newStatus: string) => {
+    if (!confirm(`Change order status to "${newStatus}"?`)) return;
+
     try {
-      await editOrder(orderId, { status: newStatus as 'pending' | 'confirmed' | 'preparing' | 'ready' | 'delivered' | 'cancelled' });
+      await editOrder(orderId, {
+        status: newStatus as
+          | "pending"
+          | "confirmed"
+          | "preparing"
+          | "ready"
+          | "delivered"
+          | "cancelled",
+      });
+      fetchOrders(); // Refresh orders after update
     } catch (error) {
       alert("Failed to update order status");
     }
@@ -61,7 +70,7 @@ const AdminOrdersPageInner = () => {
       <h1 className="text-2xl font-bold mb-4">Manage Orders</h1>
 
       {/* Filters and Sort */}
-      <div className="mb-4 flex gap-4 flex-wrap">
+      <div className="mb-4 flex gap-4 flex-wrap items-end">
         <div>
           <label className="block text-sm font-medium mb-1">Filter by Status</label>
           <select
@@ -102,9 +111,20 @@ const AdminOrdersPageInner = () => {
             <option value="asc">Ascending</option>
           </select>
         </div>
+
+        <button
+          onClick={() => fetchOrders()} 
+          className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
+        >
+          Refresh Orders
+        </button>
       </div>
 
-      <OrderList orders={filteredOrders} onStatusUpdate={handleStatusUpdate} />
+      {filteredOrders.length === 0 ? (
+        <div>No orders found.</div>
+      ) : (
+        <OrderList orders={filteredOrders} onStatusUpdate={handleStatusUpdate} />
+      )}
     </div>
   );
 };

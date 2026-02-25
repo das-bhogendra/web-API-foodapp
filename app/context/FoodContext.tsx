@@ -13,6 +13,7 @@ export interface FoodItem {
   isBestSeller: boolean;
   isDiscounted: boolean;
   mediaType?: "photo" | "video";
+  quantity?: number; 
 }
 
 interface FoodContextType {

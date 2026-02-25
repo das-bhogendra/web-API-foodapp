@@ -1,30 +1,37 @@
 "use client";
 import React, { useState } from "react";
-import { CartProvider, useCart } from "../../../context/CartContext";
-import { OrderProvider, useOrders } from "../../../context/OrderContext";
-import { useAuth } from "../../../context/AuthContext";
+import { useCart } from "@/app/context/CartContext";
+import { OrderProvider, useOrders } from "@/app/context/OrderContext";
+import { useAuth } from "@/app/context/AuthContext";
 import CartItem from "./components/CartItem";
 import CartSummary from "./components/CartSummary";
 
 const CartPageInner = () => {
-  const { cartItems, clearCart, totalAmount } = useCart();
+  const { cartItems, clearCart } = useCart();
   const { addOrder } = useOrders();
   const { user } = useAuth();
+  console.log("User:", user); // Debug: check user object
+
   const [notes, setNotes] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleCheckout = async () => {
-    if (cartItems.length === 0) return;
-    if (!user?.id && !user?._id) {
+    const userId = user?._id; // ✅ Use _id from user object
+    if (!userId) {
       alert("User not authenticated");
+      return;
+    }
+
+    if (cartItems.length === 0) {
+      alert("Cart is empty!");
       return;
     }
 
     setLoading(true);
     try {
       const orderData = {
-        userId: user.id || user._id,
-        foodItems: cartItems.map(item => ({
+        userId,
+        foodItems: cartItems.map((item) => ({
           foodId: item._id,
           quantity: item.quantity,
         })),
@@ -36,6 +43,7 @@ const CartPageInner = () => {
       clearCart();
       setNotes("");
     } catch (error) {
+      console.error(error);
       alert("Failed to place order. Please try again.");
     } finally {
       setLoading(false);
@@ -49,21 +57,29 @@ const CartPageInner = () => {
       {cartItems.length === 0 ? (
         <div className="text-center py-12">
           <p className="text-gray-500 text-lg">Your cart is empty.</p>
-          <a href="/user/dashboard/food" className="text-blue-500 hover:underline mt-2 inline-block">
-            Browse our menu
-          </a>
         </div>
       ) : (
         <div className="grid lg:grid-cols-3 gap-6">
+          {/* Cart Items */}
           <div className="lg:col-span-2 space-y-4">
             {cartItems.map((item) => (
-              <CartItem key={item._id} id={item._id} {...item} />
+              <CartItem
+                key={item._id}
+                id={item._id} // CartItem expects id
+                name={item.name}
+                imageUrl={item.imageUrl}
+                price={item.price}
+                quantity={item.quantity}
+              />
             ))}
           </div>
 
+          {/* Summary & Notes */}
           <div className="space-y-4">
             <div className="p-4 border rounded-lg bg-white shadow">
-              <label className="block text-sm font-medium mb-2">Order Notes (optional)</label>
+              <label className="block text-sm font-medium mb-2">
+                Order Notes (optional)
+              </label>
               <textarea
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
@@ -81,11 +97,10 @@ const CartPageInner = () => {
   );
 };
 
+// Wrap with Providers: make sure CartProvider is already higher in layout
 const CartPage = () => (
   <OrderProvider>
-    <CartProvider>
-      <CartPageInner />
-    </CartProvider>
+    <CartPageInner />
   </OrderProvider>
 );
 

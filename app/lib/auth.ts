@@ -1,18 +1,26 @@
-// lib/auth.ts
 "use client";
 import { useState, useEffect } from "react";
 
+interface User {
+  _id: string;
+  username: string;
+  email: string;
+  fullName?: string;
+  role?: string;
+  profilePicture?: string;
+}
+
 export function useAuth() {
-  const [user, setUser] = useState<string | null>(null);
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
-    if (storedUser) setUser(storedUser);
+    if (storedUser) setUser(JSON.parse(storedUser));
   }, []);
 
-  const login = (email: string) => {
-    setUser(email);
-    localStorage.setItem("user", email);
+  const login = (userData: User) => {
+    setUser(userData);
+    localStorage.setItem("user", JSON.stringify(userData));
   };
 
   const logout = () => {
