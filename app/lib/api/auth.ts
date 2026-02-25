@@ -38,7 +38,9 @@ export const whoAmI = async () => {
     const response = await axios.get(API.AUTH.WHOAMI, {
       withCredentials: true, // important to send cookie
     });
-    return response.data.user; // return only the user object
+    // API returns { success: true, data: { id, email, name, role, ... } }
+    // So we need to return response.data.data
+    return response.data.data;
   } catch (error: Error | any) {
     throw new Error(error.response?.data?.message || error.message || 'Whoami failed');
   }

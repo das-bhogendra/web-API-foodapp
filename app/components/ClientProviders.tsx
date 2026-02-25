@@ -1,13 +1,16 @@
 "use client";
 
+import React, { ReactNode } from "react";
 import { AuthProvider } from "@/app/context/AuthContext";
-import Header from "./Header";
+import { CartProvider } from "@/app/context/CartContext";
+import { OrderProvider } from "@/app/context/OrderContext";
 
-export default function ClientProviders({ children }: { children: React.ReactNode }) {
+export const ClientProviders = ({ children }: { children: ReactNode }) => {
   return (
     <AuthProvider>
-      <Header />
-      <div className="pt-16">{children}</div>
+      <OrderProvider>
+        <CartProvider>{children}</CartProvider>
+      </OrderProvider>
     </AuthProvider>
   );
-}
+};

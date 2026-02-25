@@ -1,23 +1,26 @@
 "use client";
+
 import React, { useState } from "react";
 import { useCart } from "@/app/context/CartContext";
 import { OrderProvider, useOrders } from "@/app/context/OrderContext";
 import { useAuth } from "@/app/context/AuthContext";
 import CartItem from "./components/CartItem";
 import CartSummary from "./components/CartSummary";
+import { CreateOrderDto } from "@/app/dtos/order.dto";
 
 const CartPageInner = () => {
   const { cartItems, clearCart } = useCart();
   const { addOrder } = useOrders();
-  const { user } = useAuth();
-  console.log("User:", user); // Debug: check user object
+  const { user, loading } = useAuth();
 
   const [notes, setNotes] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [loadingOrder, setLoadingOrder] = useState(false);
+
+  // Wait until authentication finishes loading
+  if (loading) return <p className="p-6">Loading...</p>;
 
   const handleCheckout = async () => {
-    const userId = user?._id; // ✅ Use _id from user object
-    if (!userId) {
+    if (!user) {
       alert("User not authenticated");
       return;
     }
@@ -27,26 +30,26 @@ const CartPageInner = () => {
       return;
     }
 
-    setLoading(true);
+    setLoadingOrder(true);
+
     try {
-      const orderData = {
-        userId,
-        foodItems: cartItems.map((item) => ({
-          foodId: item._id,
-          quantity: item.quantity,
-        })),
+      // ✅ Correct payload according to Postman
+      const orderData: CreateOrderDto = {
+        foodItems: cartItems.map((item) => item._id),
+        status: "pending",
         notes,
       };
 
       await addOrder(orderData);
+
       alert("Order placed successfully!");
       clearCart();
       setNotes("");
     } catch (error) {
-      console.error(error);
+      console.error("Order error:", error);
       alert("Failed to place order. Please try again.");
     } finally {
-      setLoading(false);
+      setLoadingOrder(false);
     }
   };
 
@@ -65,7 +68,7 @@ const CartPageInner = () => {
             {cartItems.map((item) => (
               <CartItem
                 key={item._id}
-                id={item._id} // CartItem expects id
+                id={item._id}
                 name={item.name}
                 imageUrl={item.imageUrl}
                 price={item.price}
@@ -89,7 +92,10 @@ const CartPageInner = () => {
               />
             </div>
 
-            <CartSummary onCheckout={handleCheckout} loading={loading} />
+            <CartSummary
+              onCheckout={handleCheckout}
+              loading={loadingOrder}
+            />
           </div>
         </div>
       )}
@@ -97,11 +103,10 @@ const CartPageInner = () => {
   );
 };
 
-// Wrap with Providers: make sure CartProvider is already higher in layout
-const CartPage = () => (
-  <OrderProvider>
-    <CartPageInner />
-  </OrderProvider>
-);
-
-export default CartPage;
+export default function CartPage() {
+  return (
+    <OrderProvider>
+      <CartPageInner />
+    </OrderProvider>
+  );
+}

@@ -5,7 +5,7 @@ import { OrderResponseDto, CreateOrderDto, UpdateOrderDto } from "@/app/dtos/ord
 import { mapOrder } from "@/app/utils/orderMapper";
 
 export const orderApi = {
-  // User creates order
+  // User creates order - sends items array with foodId, name, quantity, price
   create: async (dto: CreateOrderDto): Promise<OrderResponseDto> => {
     const res = await axios.post(API.USER.ORDER.CREATE, dto, { withCredentials: true });
     return mapOrder(res.data.data);

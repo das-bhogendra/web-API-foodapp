@@ -18,9 +18,10 @@ export interface OrderResponseDto {
   updatedAt: string;
 }
 
+// Backend expects: items with foodId, name, quantity, price
 export interface CreateOrderDto {
-  userId: string;
-  foodItems: { foodId: string; quantity: number }[];
+  foodItems: string[];
+  status: "pending" | "confirmed" | "delivered" | "cancelled";
   notes?: string;
 }
 
