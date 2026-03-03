@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { FoodProvider, useFood } from "@/app/context/FoodContext";
 import { CategoryProvider, useCategory } from "../../../context/CategoryContext";
 import FoodList from "./components/FoodList";
@@ -7,6 +8,7 @@ import CategoryFilter from "./components/CategoryFilter";
 import { useCart } from "@/app/context/CartContext";
 
 const FoodPageInner = () => {
+  const router = useRouter();
   const { foods } = useFood();
   const { categories } = useCategory();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -34,7 +36,19 @@ const FoodPageInner = () => {
   }, [selectedCategory, selectedType, showBestSellers, showDiscounted, searchTerm, foods]);
 
   return (
-    <div>
+    <div className="p-4">
+      <div className="flex items-center gap-3 mb-4">
+        <button
+          onClick={() => router.back()}
+          className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+        <h1 className="text-2xl font-bold">Our Menu</h1>
+      </div>
+
       {/* Search */}
       <input
         type="text"
@@ -95,10 +109,7 @@ const FoodPageInner = () => {
 const FoodPage = () => (
   <CategoryProvider>
     <FoodProvider>
-      <div className="p-4">
-        <h1 className="text-2xl font-bold mb-4">Our Menu</h1>
-        <FoodPageInner />
-      </div>
+      <FoodPageInner />
     </FoodProvider>
   </CategoryProvider>
 );

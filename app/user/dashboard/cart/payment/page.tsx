@@ -9,6 +9,7 @@ import { useAuth } from "@/app/context/AuthContext";
 import { CreateOrderDto } from "@/app/dtos/order.dto";
 import { PaymentDetails } from "@/app/lib/paymentApi";
 import PaymentMethodSelector from "./components/PaymentMethodSelector";
+import CardPaymentForm from "./components/CardPaymentForm";
 
 const DELIVERY_FEE = 2.99;
 
@@ -17,7 +18,7 @@ const PaymentPageContent = () => {
   const { cartItems, clearCart, totalAmount } = useCart();
   const { addOrder } = useOrders();
   const { user } = useAuth();
-  
+
   const {
     selectedMethod,
     setSelectedMethod,
@@ -35,7 +36,7 @@ const PaymentPageContent = () => {
   const handleMethodSelect = (method: string) => {
     setSelectedMethod({
       id: method,
-      type: method as "visa" | "mastercard" | "amex" | "paypal" | "cod",
+      type: method as "card" | "esewa" | "imepay" | "connectips" | "cod",
     });
     setPaymentError(null);
   };
@@ -52,10 +53,10 @@ const PaymentPageContent = () => {
   };
 
   const handleCardPayment = async () => {
-    const cardNumber = (document.getElementById('cardNumber') as HTMLInputElement)?.value;
-    const cardHolder = (document.getElementById('cardHolder') as HTMLInputElement)?.value;
-    const expiryDate = (document.getElementById('expiryDate') as HTMLInputElement)?.value;
-    const cvv = (document.getElementById('cvv') as HTMLInputElement)?.value;
+    const cardNumber = (document.getElementById("cardNumber") as HTMLInputElement)?.value;
+    const cardHolder = (document.getElementById("cardHolder") as HTMLInputElement)?.value;
+    const expiryDate = (document.getElementById("expiryDate") as HTMLInputElement)?.value;
+    const cvv = (document.getElementById("cvv") as HTMLInputElement)?.value;
 
     if (!cardNumber || !cardHolder || !expiryDate || !cvv) {
       setPaymentError("Please fill in all card details");
@@ -114,11 +115,13 @@ const PaymentPageContent = () => {
 
   if (cartItems.length === 0 && !orderId) {
     return (
-      <div className="max-w-2xl mx-auto p-6 text-center">
-        <p className="text-gray-500 text-lg">Your cart is empty.</p>
+      <div className="max-w-2xl mx-auto p-6 text-center space-y-4">
+        <div className="text-8xl animate-bounce">🛒</div>
+        <h2 className="text-2xl font-bold text-gray-800">Your cart is empty!</h2>
+        <p className="text-gray-500">Add delicious food to your cart and checkout easily.</p>
         <button
           onClick={() => router.push("/user/dashboard/food")}
-          className="mt-4 bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600"
+          className="mt-4 px-6 py-3 bg-green-500 text-white rounded-full shadow-md hover:bg-green-600 transition-all duration-300 hover:scale-105"
         >
           Browse Food
         </button>
@@ -127,117 +130,104 @@ const PaymentPageContent = () => {
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-6">Checkout</h1>
+    <div className="max-w-6xl mx-auto p-6">
+      <div className="flex items-center gap-3 mb-6">
+        <button
+          onClick={() => router.back()}
+          className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+        <h1 className="text-3xl font-extrabold text-gray-900">Checkout</h1>
+      </div>
 
-      <div className="grid md:grid-cols-2 gap-6">
+      <div className="grid md:grid-cols-2 gap-8">
+        {/* Left: Payment Methods */}
         <div className="space-y-6">
-          <div className="p-4 border rounded-lg bg-white shadow">
+          <div className="bg-white shadow-lg rounded-2xl p-6 border border-gray-100">
             <PaymentMethodSelector onSelect={handleMethodSelect} />
           </div>
 
-          {selectedMethod && selectedMethod.type !== "cod" && selectedMethod.type !== "paypal" && (
-            <div className="p-4 border rounded-lg bg-white shadow">
-              <h3 className="text-lg font-semibold mb-4">Card Details</h3>
-              
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium mb-1">Card Number</label>
-                  <input
-                    id="cardNumber"
-                    type="text"
-                    placeholder="1234 5678 9012 3456"
-                    className="w-full p-3 border rounded-lg"
-                    maxLength={19}
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-1">Cardholder Name</label>
-                  <input
-                    id="cardHolder"
-                    type="text"
-                    placeholder="John Doe"
-                    className="w-full p-3 border rounded-lg"
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium mb-1">Expiry Date</label>
-                    <input
-                      id="expiryDate"
-                      type="text"
-                      placeholder="MM/YY"
-                      className="w-full p-3 border rounded-lg"
-                      maxLength={5}
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium mb-1">CVV</label>
-                    <input
-                      id="cvv"
-                      type="text"
-                      placeholder="123"
-                      className="w-full p-3 border rounded-lg"
-                      maxLength={4}
-                    />
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2 mt-4 text-sm text-gray-500">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                  </svg>
-                  <span>Your payment information is secure and encrypted</span>
-                </div>
-              </div>
+          {selectedMethod?.type === "card" && (
+            <div className="bg-white shadow-lg rounded-2xl p-6 border border-gray-100">
+              <CardPaymentForm />
             </div>
           )}
 
-          {selectedMethod?.type === "paypal" && (
-            <div className="p-4 border rounded-lg bg-white shadow text-center py-8">
-              <p className="text-lg mb-4">You will be redirected to PayPal to complete your payment.</p>
-              <button
-                onClick={handlePayNow}
-                disabled={isProcessing}
-                className="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 disabled:opacity-50"
-              >
-                {isProcessing ? "Processing..." : "Continue to PayPal"}
-              </button>
+          {selectedMethod?.type === "esewa" && (
+            <div className="bg-white shadow-lg rounded-2xl p-6 border border-gray-100">
+              <h3 className="text-lg font-semibold mb-4">eSewa Payment</h3>
+              <input
+                id="esewaMobile"
+                type="text"
+                placeholder="Mobile / eSewa ID"
+                className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-400 outline-none"
+              />
+              <p className="text-xs text-gray-500 mt-2">You will be redirected to eSewa for approval.</p>
+            </div>
+          )}
+
+          {selectedMethod?.type === "imepay" && (
+            <div className="bg-white shadow-lg rounded-2xl p-6 border border-gray-100">
+              <h3 className="text-lg font-semibold mb-4">IME Pay Payment</h3>
+              <input
+                id="imepayMobile"
+                type="text"
+                placeholder="Mobile Number"
+                className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-400 outline-none"
+              />
+              <p className="text-xs text-gray-500 mt-2">You will receive a confirmation in IME Pay app.</p>
+            </div>
+          )}
+
+          {selectedMethod?.type === "connectips" && (
+            <div className="bg-white shadow-lg rounded-2xl p-6 border border-gray-100 space-y-4">
+              <h3 className="text-lg font-semibold mb-2">ConnectIPS / Bank Transfer</h3>
+              <select id="bankName" className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-400 outline-none">
+                <option value="">Select a bank</option>
+                <option value="nmb">NMB Bank</option>
+                <option value="nic">NIC Asia</option>
+                <option value="sanima">Sanima Bank</option>
+                <option value="neb">Nepal Express Bank</option>
+                <option value="hbl">HBL Bank</option>
+              </select>
+              <input
+                id="accountNumber"
+                type="text"
+                placeholder="Account Number"
+                className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-400 outline-none"
+              />
+              <p className="text-xs text-red-500 mt-1">Complete payment within 30 minutes.</p>
             </div>
           )}
         </div>
 
-        <div className="space-y-4">
-          <div className="p-4 border rounded-lg bg-white shadow">
+        {/* Right: Order Summary */}
+        <div className="space-y-6 sticky top-20">
+          <div className="bg-white shadow-lg rounded-2xl p-6 border border-gray-100">
             <h2 className="text-xl font-bold mb-4">Order Summary</h2>
-            
             <div className="space-y-3 max-h-60 overflow-y-auto">
               {cartItems.map((item) => (
                 <div key={item._id} className="flex justify-between items-center">
-                  <div className="flex items-center gap-2">
-                    <span className="text-gray-500">{item.quantity}x</span>
-                    <span className="truncate max-w-[150px]">{item.name}</span>
-                  </div>
-                  <span>${(item.price * item.quantity).toFixed(2)}</span>
+                  <span className="text-gray-700 truncate max-w-[180px]">{item.name} x {item.quantity}</span>
+                  <span className="font-medium">NPR {(item.price * item.quantity).toFixed(2)}</span>
                 </div>
               ))}
             </div>
-
             <div className="border-t mt-4 pt-4 space-y-2">
               <div className="flex justify-between">
                 <span>Subtotal</span>
-                <span>${totalAmount.toFixed(2)}</span>
+                <span>NPR {totalAmount.toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
                 <span>Delivery Fee</span>
-                <span>${DELIVERY_FEE.toFixed(2)}</span>
+                <span>NPR {DELIVERY_FEE.toFixed(2)}</span>
               </div>
               <div className="flex justify-between font-semibold text-lg">
                 <span>Total</span>
-                <span>${grandTotal.toFixed(2)}</span>
+                <span>NPR {grandTotal.toFixed(2)}</span>
               </div>
             </div>
           </div>
@@ -246,21 +236,9 @@ const PaymentPageContent = () => {
             <button
               onClick={selectedMethod.type === "cod" ? handlePayNow : handleCardPayment}
               disabled={isProcessing}
-              className="w-full bg-green-500 text-white py-3 rounded-lg hover:bg-green-600 transition disabled:opacity-50 disabled:cursor-not-allowed font-semibold"
+              className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-3 rounded-full font-bold shadow-lg hover:scale-105 hover:from-green-600 hover:to-green-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isProcessing ? (
-                <span className="flex items-center justify-center gap-2">
-                  <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                  </svg>
-                  Processing Payment...
-                </span>
-              ) : selectedMethod.type === "cod" ? (
-                `Place Order - Pay $${grandTotal.toFixed(2)} on Delivery`
-              ) : (
-                `Pay $${grandTotal.toFixed(2)}`
-              )}
+              {isProcessing ? "Processing Payment..." : selectedMethod.type === "cod" ? `Place Order - Pay NPR ${(grandTotal * 1.5).toFixed(2)} on Delivery` : `Pay NPR ${(grandTotal * 1.5).toFixed(2)}`}
             </button>
           )}
 
@@ -269,13 +247,6 @@ const PaymentPageContent = () => {
               <p className="text-red-600 text-sm">{paymentError}</p>
             </div>
           )}
-
-          <button
-            onClick={() => router.back()}
-            className="w-full text-gray-600 py-2 hover:text-gray-800"
-          >
-            Back to Cart
-          </button>
         </div>
       </div>
     </div>

@@ -3,7 +3,7 @@ import axios from "./api/axios";
 
 export interface PaymentMethod {
   id: string;
-  type: "visa" | "mastercard" | "amex" | "paypal" | "cod";
+  type: "card" | "esewa" | "imepay" | "connectips" | "cod";
   last4?: string;
   expiryDate?: string;
   isDefault?: boolean;
