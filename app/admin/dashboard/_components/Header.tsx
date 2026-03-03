@@ -1,42 +1,64 @@
 "use client";
 import Link from "next/link";
+import Image from "next/image";
 import { useAuth } from "@/app/context/AuthContext";
 
 export default function Header() {
-    const { logout, user } = useAuth();
+  const { logout, user } = useAuth();
 
-    return (
-        <header className="sticky top-0 z-50 backdrop-blur supports-[backdrop-filter]:bg-background/80 border-b border-black/10 dark:border-white/10">
-            <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" aria-label="Global">
-                <div className="flex h-16 items-center justify-between">
-                    {/* Left: Logo & Title */}
-                    <div className="flex items-center gap-3">
-                        <Link href="/admin/dashboard" className="flex items-center gap-2 group">
-                            <span className="inline-flex h-8 w-8 items-center justify-center rounded-md bg-foreground text-background font-semibold">
-                                A
-                            </span>
-                            <span className="text-base font-semibold tracking-tight group-hover:opacity-80 transition-opacity">
-                                Admin Panel
-                            </span>
-                        </Link>
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <div className="h-6 flex items-center justify-center text-xs font-semibold">
-                            {user?.email || 'Admin'}
-                        </div>
-                        <span className="text-sm font-medium sm:inline">
-                            <button
-                                onClick={() => {
-                                    logout();
-                                }}
-                                className="w-full border flex items-center gap-2 px-3 py-2 text-sm rounded-md hover:bg-foreground/5 transition-colors text-left"
-                            >
-                                Logout
-                            </button>
-                        </span>
-                    </div>
-                </div>
-            </nav>
-        </header>
-    );
+  return (
+    <header className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
+      <nav className="mx-auto max-w-7xl px-6">
+        <div className="flex h-16 items-center justify-between">
+
+          {/* ================= LEFT SECTION ================= */}
+          <Link
+            href="/admin/dashboard"
+            className="flex items-center gap-3 group"
+          >
+            {/* Logo from assets/icons */}
+            <div className="relative h-10 w-10">
+              <Image
+                src="/assets/icons/foodlogo.jpg" // ✅ change filename if needed
+                alt="Food Logo"
+                fill
+                className="object-contain"
+              />
+            </div>
+
+            <div className="flex flex-col leading-tight">
+              <span className="text-lg font-bold text-black tracking-wide">
+                DpopFood
+              </span>
+              <span className="text-xs text-gray-500 -mt-1">
+                Admin Dashboard
+              </span>
+            </div>
+          </Link>
+
+          {/* ================= RIGHT SECTION ================= */}
+          <div className="flex items-center gap-6">
+
+            {/* Admin Email */}
+            <div className="text-sm text-gray-600 hidden sm:block">
+              {user?.email || "admin@dpopfood.com"}
+            </div>
+
+            {/* Avatar */}
+            <div className="h-9 w-9 rounded-full bg-black text-white flex items-center justify-center text-sm font-semibold">
+              {user?.email?.charAt(0).toUpperCase() || "A"}
+            </div>
+
+            {/* Logout Button */}
+            <button
+              onClick={logout}
+              className="px-4 py-2 text-sm font-medium border border-black rounded-lg hover:bg-black hover:text-white transition-all duration-200"
+            >
+              Logout
+            </button>
+          </div>
+        </div>
+      </nav>
+    </header>
+  );
 }

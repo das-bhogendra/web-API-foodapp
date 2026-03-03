@@ -1,68 +1,85 @@
-import { API } from "../endpoints";
+// D:\Projects\my-frontend\app\lib\api\admin\user.ts
 import axios from "../axios";
+import { API } from "../endpoints";
 
-export const createUser = async (userData: any) => {
-    try {
-        const response = await axios.post(
-            API.ADMIN.USER.CREATE,
-            userData,
-            {
-                headers: {
-                    'Content-Type': 'multipart/form-data', // for file upload/multer
-                }
-            }
-        );
-        return response.data;
-    } catch (error: Error | any) {
-        throw new Error(error.response?.data?.message
-            || error.message || 'Create user failed');
-    }
+export interface User {
+  _id: string;
+  fullName?: string;
+  username?: string;
+  email: string;
+  role: string;
+  phoneNumber?: string;
+  profilePicture?: string;
+  isActive?: boolean;
+  createdAt: string;
+  updatedAt?: string;
 }
 
-export const getAllUsers = async () => {
+export const userApi = {
+  // GET all users
+  getAll: async (): Promise<User[]> => {
     try {
-        const response = await axios.get(API.ADMIN.USER.GET_ALL);
-        return response.data;
-    } catch (error: Error | any) {
-        throw new Error(error.response?.data?.message
-            || error.message || 'Get users failed');
-    }
-}
+      const res = await axios.get(API.ADMIN.USER.GET_ALL, { withCredentials: true });
 
-export const getUserById = async (id: string) => {
-    try {
-        const response = await axios.get(`${API.ADMIN.USER.GET_BY_ID}${id}`);
-        return response.data;
-    } catch (error: Error | any) {
-        throw new Error(error.response?.data?.message
-            || error.message || 'Get user failed');
-    }
-}
+      // Flexible array detection (works for data array or data.users)
+      if (Array.isArray(res.data.data)) return res.data.data;
+      if (res.data.data && Array.isArray(res.data.data.users)) return res.data.data.users;
+      if (Array.isArray(res.data.users)) return res.data.users;
 
-export const updateUser = async (id: string, userData: any) => {
-    try {
-        const response = await axios.put(
-            `${API.ADMIN.USER.UPDATE}${id}`,
-            userData,
-            {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                }
-            }
-        );
-        return response.data;
-    } catch (error: Error | any) {
-        throw new Error(error.response?.data?.message
-            || error.message || 'Update user failed');
+      return []; // fallback
+    } catch (err: any) {
+      console.error("Fetch users failed:", err);
+      return [];
     }
-}
+  },
 
-export const deleteUser = async (id: string) => {
+  // GET user by ID
+  getById: async (id: string): Promise<User | null> => {
     try {
-        const response = await axios.delete(`${API.ADMIN.USER.DELETE}${id}`);
-        return response.data;
-    } catch (error: Error | any) {
-        throw new Error(error.response?.data?.message
-            || error.message || 'Delete user failed');
+      const res = await axios.get(`${API.ADMIN.USER.GET_BY_ID}${id}`, { withCredentials: true });
+      return res.data.data || null;
+    } catch (err: any) {
+      console.error(`Error fetching user ${id}:`, err);
+      return null;
     }
-}
+  },
+
+  // CREATE user
+  create: async (formData: FormData): Promise<User | null> => {
+    try {
+      const res = await axios.post(API.ADMIN.USER.CREATE, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+        withCredentials: true,
+      });
+      return res.data.data || null;
+    } catch (err: any) {
+      console.error("Error creating user:", err);
+      return null;
+    }
+  },
+
+  // UPDATE user
+  update: async (id: string, formData: FormData): Promise<User | null> => {
+    try {
+      const res = await axios.put(`${API.ADMIN.USER.UPDATE}${id}`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+        withCredentials: true,
+      });
+      return res.data.data || null;
+    } catch (err: any) {
+      console.error(`Error updating user ${id}:`, err);
+      return null;
+    }
+  },
+
+  // DELETE user
+  delete: async (id: string): Promise<{ message: string }> => {
+    try {
+      const res = await axios.delete(`${API.ADMIN.USER.DELETE}${id}`, { withCredentials: true });
+      return res.data || { message: "Deleted successfully" };
+    } catch (err: any) {
+      console.error(`Error deleting user ${id}:`, err);
+      return { message: "Delete failed" };
+    }
+  },
+};

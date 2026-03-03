@@ -4,10 +4,9 @@ import { useCart } from "@/app/context/CartContext";
 
 interface Props {
   onCheckout: () => void;
-  loading?: boolean;
 }
 
-const CartSummary: React.FC<Props> = ({ onCheckout, loading = false }) => {
+const CartSummary: React.FC<Props> = ({ onCheckout }) => {
   const { totalAmount, cartItems } = useCart();
 
   return (
@@ -29,10 +28,10 @@ const CartSummary: React.FC<Props> = ({ onCheckout, loading = false }) => {
       </div>
       <button
         onClick={onCheckout}
-        disabled={cartItems.length === 0 || loading}
+        disabled={cartItems.length === 0}
         className="w-full bg-green-500 text-white py-3 rounded-lg hover:bg-green-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        {loading ? "Placing Order..." : "Place Order"}
+        Proceed to Checkout
       </button>
     </div>
   );

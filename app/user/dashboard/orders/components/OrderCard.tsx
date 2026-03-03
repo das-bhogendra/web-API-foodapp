@@ -8,36 +8,53 @@ interface Props {
 }
 
 const OrderCard: React.FC<Props> = ({ order }) => {
-  const { removeOrder } = useOrders();
-  const [loading, setLoading] = useState(false);
+  const { removeOrder, editOrder } = useOrders(); // ✅ added updateOrder
+  const [loadingCancel, setLoadingCancel] = useState(false);
+  const [loadingUpdate, setLoadingUpdate] = useState(false);
+  const [status, setStatus] = useState<OrderResponseDto["status"]>(order.status);
 
   const handleCancelOrder = async () => {
     if (!confirm("Are you sure you want to cancel this order?")) return;
 
-    setLoading(true);
+    setLoadingCancel(true);
     try {
       await removeOrder(order.id);
       alert("Order cancelled successfully");
     } catch (error) {
       alert("Failed to cancel order");
     } finally {
-      setLoading(false);
+      setLoadingCancel(false);
     }
   };
 
-  const canCancel = order.status === "pending" || order.status === "confirmed";
+  const handleStatusChange = async (newStatus: OrderResponseDto["status"]) => {
+    setStatus(newStatus); // Optimistic UI update
+    setLoadingUpdate(true);
+    try {
+      await editOrder(order.id, { status: newStatus });
+      alert("Order status updated!");
+    } catch (error) {
+      alert("Failed to update order");
+      setStatus(order.status); // revert on failure
+    } finally {
+      setLoadingUpdate(false);
+    }
+  };
+
+  const canCancel = status === "pending" || status === "confirmed";
 
   return (
     <div className="border rounded-lg p-4 shadow-md mb-4 bg-white">
       <div className="flex justify-between items-start mb-2">
         <h3 className="font-semibold text-lg">Order #{order.id}</h3>
         <span className={`px-2 py-1 rounded text-sm ${
-          order.status === 'delivered' ? 'bg-green-100 text-green-800' :
-          order.status === 'cancelled' ? 'bg-red-100 text-red-800' :
-          order.status === 'preparing' ? 'bg-blue-100 text-blue-800' :
-          'bg-yellow-100 text-yellow-800'
+          status === 'delivered' ? 'bg-green-100 text-green-800' :
+          status === 'cancelled' ? 'bg-red-100 text-red-800' :
+          status === 'preparing' ? 'bg-blue-100 text-blue-800' :
+          status === 'confirmed' ? 'bg-yellow-100 text-yellow-800' :
+          'bg-gray-100 text-gray-800'
         }`}>
-          {order.status}
+          {status}
         </span>
       </div>
 
@@ -63,13 +80,31 @@ const OrderCard: React.FC<Props> = ({ order }) => {
         </div>
       </div>
 
+      {/* Update order status */}
+      <div className="mb-4">
+        <label className="block text-sm font-medium mb-1">Update Status:</label>
+        <select
+          value={status}
+          onChange={(e) => handleStatusChange(e.target.value as OrderResponseDto["status"])}
+          disabled={loadingUpdate || status === "delivered" || status === "cancelled"}
+          className="border p-1 rounded w-full md:w-1/2"
+        >
+          <option value="pending">Pending</option>
+          <option value="confirmed">Confirmed</option>
+          <option value="preparing">Preparing</option>
+          <option value="ready">Ready</option>
+          <option value="delivered">Delivered</option>
+          <option value="cancelled">Cancelled</option>
+        </select>
+      </div>
+
       {canCancel && (
         <button
           onClick={handleCancelOrder}
-          disabled={loading}
+          disabled={loadingCancel}
           className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 disabled:opacity-50"
         >
-          {loading ? "Cancelling..." : "Cancel Order"}
+          {loadingCancel ? "Cancelling..." : "Cancel Order"}
         </button>
       )}
     </div>

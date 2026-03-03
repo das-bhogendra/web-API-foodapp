@@ -9,15 +9,23 @@ interface Props {
 }
 
 const OrderList: React.FC<Props> = ({ orders, onStatusUpdate }) => {
+  if (orders.length === 0) {
+    return (
+      <div className="bg-white rounded-2xl p-10 text-center text-gray-500 shadow-sm">
+        No orders found
+      </div>
+    );
+  }
+
   return (
-    <div>
-      {orders.length === 0 ? (
-        <div className="text-center py-8 text-gray-500">No orders found</div>
-      ) : (
-        orders.map(order => (
-          <OrderCard key={order.id} order={order} onStatusUpdate={onStatusUpdate} />
-        ))
-      )}
+    <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+      {orders.map(order => (
+        <OrderCard
+          key={order.id}
+          order={order}
+          onStatusUpdate={onStatusUpdate}
+        />
+      ))}
     </div>
   );
 };

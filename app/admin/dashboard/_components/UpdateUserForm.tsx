@@ -4,7 +4,7 @@ import { UserData, UserSchema } from "@/app/admin/users/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRef, useState, useTransition, useEffect } from "react";
 import { toast } from "react-toastify";
-import { getUserById, updateUser } from "@/app/lib/api/admin/user";
+import { userApi } from "@/app/lib/api/admin/user";
 import { useParams } from "next/navigation";
 
 export default function UpdateUserForm() {
@@ -22,13 +22,20 @@ export default function UpdateUserForm() {
     useEffect(() => {
         const fetchUser = async () => {
             try {
-                const response = await getUserById(id);
-                const user = response.data;
-                setValue('firstName', user.firstName || '');
-                setValue('lastName', user.lastName || '');
+                const user = await userApi.getById(id);
+                if (!user) {
+                    setError("User not found");
+                    setLoading(false);
+                    return;
+                }
+                const nameParts = (user.fullName || '').split(' ');
+                const firstName = nameParts[0] || '';
+                const lastName = nameParts.slice(1).join(' ') || '';
+                setValue('firstName', firstName);
+                setValue('lastName', lastName);
                 setValue('email', user.email);
-                setValue('username', user.username);
-                if (user.imageUrl) setPreviewImage(user.imageUrl);
+                setValue('username', user.username || '');
+                if (user.profilePicture) setPreviewImage(user.profilePicture);
             } catch (err: any) {
                 setError(err.message);
             } finally {
@@ -72,7 +79,7 @@ export default function UpdateUserForm() {
                 if (data.confirmPassword) formData.append('confirmPassword', data.confirmPassword);
                 if (data.image) formData.append('image', data.image);
 
-                await updateUser(id, formData);
+                await userApi.update(id, formData);
                 toast.success('User updated successfully');
             } catch (error: Error | any) {
                 toast.error(error.message || 'Update user failed');
