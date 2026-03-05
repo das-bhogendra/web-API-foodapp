@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../../context/AuthContext";
 
 const UserNavbar = () => {
   const { user, logout } = useAuth();
@@ -16,7 +16,7 @@ const UserNavbar = () => {
       <div className="max-w-full px-6">
         <div className="flex justify-between items-center h-16">
 
-          {/* LEFT SIDE - LOGO */}
+          
           <Link href="/user/dashboard" className="flex items-center gap-3">
             <Image
               src="/assets/icons/foodlogo.jpg"
@@ -30,7 +30,7 @@ const UserNavbar = () => {
             </span>
           </Link>
 
-          {/* RIGHT SIDE */}
+          
           <div className="flex items-center gap-6">
             <span className="text-sm text-gray-600 hidden md:block">
               Welcome, {user?.name || user?.email}

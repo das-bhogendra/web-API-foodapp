@@ -4,11 +4,14 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const ADMIN_LINKS = [
-  { href: "/", label: "Home" }, // ✅ Added Home
+  { href: "/", label: "Home" },
   { href: "/admin/dashboard", label: "Dashboard" },
   { href: "/admin/dashboard/food", label: "Food Items" },
-  { href: "/admin/orders", label: "Orders" },
-  { href: "/admin/users", label: "Users" },
+  { href: "/admin/dashboard/orders", label: "Orders" },
+  { href: "/admin/dashboard/users", label: "Users" },
+  { href: "/admin/dashboard/categories", label: "Categories" },
+  { href: "/admin/dashboard/blogs", label: "Blogs" },
+  { href: "/admin/dashboard/profile", label: "Profile" },
 ];
 
 export default function Sidebar() {

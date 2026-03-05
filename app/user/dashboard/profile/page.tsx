@@ -8,13 +8,21 @@ import OrderList from "../orders/components/OrderList";
 const ProfilePageInner = () => {
   const router = useRouter();
   const { user, loading } = useAuth();
-  const { orders, fetchOrders, isLoading } = useOrders();
+  const { orders, fetchOrders, isLoading, error } = useOrders();
   const [activeTab, setActiveTab] = useState<"profile" | "orders">("profile");
 
   // Fetch orders for current user once auth is ready
   useEffect(() => {
+    console.log("=== PROFILE PAGE EFFECT ===");
+    console.log("loading:", loading);
+    console.log("user:", user);
+    
     if (!loading && user) {
-      fetchOrders(); // backend uses JWT, no need to pass ID
+      const userId = user.id || user._id;
+      console.log("Fetching orders for userId:", userId);
+      if (userId) {
+        fetchOrders(userId);
+      }
     }
   }, [user, loading]);
 

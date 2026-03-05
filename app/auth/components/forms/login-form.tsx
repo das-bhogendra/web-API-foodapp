@@ -1,7 +1,7 @@
 'use client';
 
 import Link from "next/link";
-import { useLoginForm } from "../../features/auth/hooks/use-login-form";
+import { useLoginForm } from "../../../features/auth/hooks/use-login-form";
 
 export default function LoginForm() {
   const { register, handleSubmit, onSubmit, errors, isSubmitting, error } = useLoginForm();
@@ -9,12 +9,12 @@ export default function LoginForm() {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
 
-      {/* Title */}
+      
       <h2 className="text-2xl font-semibold text-center text-gray-800">
         Login Page
       </h2>
 
-      {/* Username */}
+      
       <div>
         <input
           type="text"
@@ -29,7 +29,7 @@ export default function LoginForm() {
         )}
       </div>
 
-      {/* Password */}
+      
       <div>
         <input
           type="password"

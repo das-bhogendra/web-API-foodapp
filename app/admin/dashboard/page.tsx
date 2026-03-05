@@ -5,7 +5,7 @@ export default function AdminDashboardContent() {
   return (
     <div className="flex-1 flex flex-col p-8 space-y-8 bg-gray-100 min-h-screen">
 
-      {/* Welcome Section */}
+      
       <div className="bg-black text-white rounded-2xl overflow-hidden flex flex-col md:flex-row">
         <div className="p-8 flex-1">
           <h2 className="text-2xl font-bold mb-2">Welcome Administrator!</h2>
@@ -26,7 +26,7 @@ export default function AdminDashboardContent() {
         </div>
       </div>
 
-      {/* Analytics Cards */}
+      
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-white shadow rounded-lg p-4">
           <p className="text-gray-500 text-sm">Total Users</p>

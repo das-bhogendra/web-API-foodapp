@@ -1,4 +1,4 @@
-import Header from "@/app/components/Header";
+import Header from "@/app/auth/components/Header";
 
 
 export default function Layout({ children }: { children: React.ReactNode }) {

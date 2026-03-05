@@ -45,41 +45,61 @@ export const userApi = {
   },
 
   // CREATE user
-  create: async (formData: FormData): Promise<User | null> => {
+  create: async (formData: FormData): Promise<{ user?: User; error?: string }> => {
     try {
       const res = await axios.post(API.ADMIN.USER.CREATE, formData, {
         headers: { "Content-Type": "multipart/form-data" },
         withCredentials: true,
       });
-      return res.data.data || null;
+      if (!res.data || res.status === 401) {
+        return { error: "Unauthorized or server error" };
+      }
+      return { user: res.data.data || null };
     } catch (err: any) {
-      console.error("Error creating user:", err);
-      return null;
+      const responseData = err.response?.data;
+      let message = "Create user failed";
+      if (responseData) {
+        if (typeof responseData === 'string') {
+          message = responseData;
+        } else if (responseData.message) {
+          message = responseData.message;
+        } else if (responseData.error) {
+          message = responseData.error;
+        } else {
+          message = JSON.stringify(responseData);
+        }
+      } else {
+        message = err.message;
+      }
+      console.error("Error creating user:", message, responseData);
+      return { error: message };
     }
   },
 
   // UPDATE user
-  update: async (id: string, formData: FormData): Promise<User | null> => {
+  update: async (id: string, formData: FormData): Promise<{ user?: User; error?: string }> => {
     try {
       const res = await axios.put(`${API.ADMIN.USER.UPDATE}${id}`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
         withCredentials: true,
       });
-      return res.data.data || null;
+      return { user: res.data.data || null };
     } catch (err: any) {
-      console.error(`Error updating user ${id}:`, err);
-      return null;
+      const message = err.response?.data?.message || err.message || "Update user failed";
+      console.error(`Error updating user ${id}:`, message);
+      return { error: message };
     }
   },
 
   // DELETE user
-  delete: async (id: string): Promise<{ message: string }> => {
+  delete: async (id: string): Promise<{ message: string; error?: string }> => {
     try {
       const res = await axios.delete(`${API.ADMIN.USER.DELETE}${id}`, { withCredentials: true });
-      return res.data || { message: "Deleted successfully" };
+      return { message: res.data?.message || "Deleted successfully" };
     } catch (err: any) {
-      console.error(`Error deleting user ${id}:`, err);
-      return { message: "Delete failed" };
+      const message = err.response?.data?.message || err.message || "Delete failed";
+      console.error(`Error deleting user ${id}:`, message);
+      return { message: "Delete failed", error: message };
     }
   },
 };

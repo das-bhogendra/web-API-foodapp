@@ -1,4 +1,4 @@
-import UpdateUserForm from "../../../dashboard/_components/UpdateUserForm";
+import UpdateUserForm from "../../../_components/UpdateUserForm";
 
 export default function Page() {
     return (

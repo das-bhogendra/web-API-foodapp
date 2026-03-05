@@ -16,11 +16,18 @@ export interface PaymentDetails {
   cvv: string;
 }
 
+export interface CartItem {
+  _id: string;
+  name: string;
+  price: number;
+  quantity: number;
+}
+
 export interface PaymentRequest {
-  orderId: string;
-  amount: number;
+  foodItems: CartItem[];
+  totalAmount: number;
   paymentMethod: string;
-  paymentDetails?: PaymentDetails;
+  transactionId?: string;
 }
 
 export interface PaymentResponse {
@@ -28,26 +35,38 @@ export interface PaymentResponse {
   message: string;
   transactionId?: string;
   orderId?: string;
+  payment?: any;
+  order?: any;
 }
 
 export const paymentApi = {
   processPayment: async (request: PaymentRequest): Promise<PaymentResponse> => {
-    const res = await axios.post("/api/payments/process", request, { withCredentials: true });
+    const res = await axios.post("/api/payment/create", request, { withCredentials: true });
+    return res.data;
+  },
+
+  getPaymentByOrder: async (orderId: string): Promise<any> => {
+    const res = await axios.get(`/api/payment/${orderId}`, { withCredentials: true });
+    return res.data;
+  },
+
+  updatePaymentStatus: async (orderId: string, status: string, transactionId?: string): Promise<PaymentResponse> => {
+    const res = await axios.put(`/api/payment/${orderId}/status`, { status, transactionId }, { withCredentials: true });
     return res.data;
   },
 
   getPaymentMethods: async (): Promise<PaymentMethod[]> => {
-    const res = await axios.get("/api/payments/methods", { withCredentials: true });
+    const res = await axios.get("/api/payment/methods", { withCredentials: true });
     return res.data.data;
   },
 
   savePaymentMethod: async (method: Omit<PaymentMethod, "id">): Promise<PaymentMethod> => {
-    const res = await axios.post("/api/payments/methods", method, { withCredentials: true });
+    const res = await axios.post("/api/payment/methods", method, { withCredentials: true });
     return res.data.data;
   },
 
   deletePaymentMethod: async (id: string): Promise<boolean> => {
-    const res = await axios.delete(`/api/payments/methods/${id}`, { withCredentials: true });
+    const res = await axios.delete(`/api/payment/methods/${id}`, { withCredentials: true });
     return res.data.success;
   },
 };

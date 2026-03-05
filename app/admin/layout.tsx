@@ -1,5 +1,5 @@
 import React from 'react';
-import ProtectedRoute from '../components/ProtectedRoute';
+import ProtectedRoute from '../auth/components/ProtectedRoute';
 import { AuthProvider } from '../context/AuthContext';
 
 export default function AdminLayout({

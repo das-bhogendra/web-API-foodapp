@@ -1,4 +1,4 @@
-import CreateUserForm from "../../dashboard/_components/CreateUserForm";
+import CreateUserForm from "../../_components/CreateUserForm";
 
 export default function Page() {
     return (

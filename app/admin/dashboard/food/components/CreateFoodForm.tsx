@@ -19,7 +19,7 @@ export default function CreateFoodForm({ onSuccess }: Props) {
     image: null as File | null,
   });
 
-  // Handle input changes
+  
   const handleChange = (e: any) => {
     const { name, value, type, checked } = e.target;
     setFormData((prev) => ({
@@ -28,7 +28,7 @@ export default function CreateFoodForm({ onSuccess }: Props) {
     }));
   };
 
-  // Handle image upload
+  
   const handleImageChange = (e: any) => {
     setFormData((prev) => ({
       ...prev,

@@ -11,7 +11,22 @@ const OrdersPageInner = () => {
   const { orders, fetchOrders, isLoading } = useOrders();
 
   useEffect(() => {
-    if (!loading && user) fetchOrders();
+    console.log("=== ORDERS PAGE EFFECT ===");
+    console.log("loading:", loading);
+    console.log("user:", user);
+    console.log("user.id:", user?.id);
+    console.log("user._id:", user?._id);
+    console.log("user.email:", user?.email);
+    
+    if (!loading && user) {
+      const userId = user.id || user._id;
+      console.log("Calling fetchOrders with:", userId);
+      if (userId) {
+        fetchOrders(userId);
+      } else {
+        console.error("No user ID found! User object:", user);
+      }
+    }
   }, [user, loading]);
 
   // 🔄 Loading Skeleton

@@ -1,19 +1,17 @@
 "use client";
 import { Controller, useForm } from "react-hook-form";
-import { UserData, UserSchema } from "@/app/admin/users/schema";
+import { UserData, UserSchema } from "@/app/admin/dashboard/users/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRef, useState, useTransition } from "react";
-import Link from "next/link";
+import { useRef, useState } from "react";
 import { toast } from "react-toastify";
-import { handleCreateUser } from "@/app/lib/actions/admin/user-action";
-export default function CreateUserForm() {
+import { userApi } from "@/app/lib/api/admin/user";
 
-    const [pending, startTransition] = useTransition();
+export default function CreateUserForm() {
     const { register, handleSubmit, control, reset, formState: { errors, isSubmitting } } = useForm<UserData>({
         resolver: zodResolver(UserSchema)
     });
-    const [error, setError] = useState<string | null>(null);
     const [previewImage, setPreviewImage] = useState<string | null>(null);
+    const [error, setError] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleImageChange = (file: File | undefined, onChange: (file: File | undefined) => void) => {
@@ -39,41 +37,44 @@ export default function CreateUserForm() {
 
     const onSubmit = async (data: UserData) => {
         setError(null);
-        startTransition(async () => {
-            try {
-                const formData = new FormData();
-                if (data.firstName) {
-                    formData.append('firstName', data.firstName);
-                }
-                if (data.lastName) {
-                    formData.append('lastName', data.lastName);
-                }
+        try {
+            const formData = new FormData();
+            const fullName = [data.firstName, data.lastName].filter(Boolean).join(' ');
+            if (fullName) {
+                formData.append('fullName', fullName);
+            }
 
-                formData.append('email', data.email);
-                formData.append('username', data.username);
-                formData.append('password', data.password);
-                formData.append('confirmPassword', data.confirmPassword);
+            formData.append('email', data.email);
+            formData.append('username', data.username);
+            formData.append('password', data.password);
+            formData.append('confirmPassword', data.confirmPassword);
 
-                if (data.image) {
-                    formData.append('image', data.image);
-                }
-                const response = await handleCreateUser(formData);
+            if (data.image) {
+                formData.append('image', data.image);
+            }
 
-                if (!response.success) {
-                    throw new Error(response.message || 'Create profile failed');
-                }
+            const result = await userApi.create(formData);
+
+            if (result.error) {
+                toast.error(result.error);
+                setError(result.error);
+                return;
+            }
+
+            if (result.user && result.user._id) {
                 reset();
                 handleDismissImage();
-                toast.success('Profile Created successfully');
-
-            } catch (error: Error | any) {
-                toast.error(error.message || 'Create profile failed');
-                setError(error.message || 'Create profile failed');
+                toast.success('User Created successfully');
+            } else {
+                toast.error('Failed to create user');
+                setError('Failed to create user');
             }
-        });
 
+        } catch (error: Error | any) {
+            toast.error(error.message || 'Create user failed');
+            setError(error.message || 'Create user failed');
+        }
     };
-    console.log(errors);
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             {/* Profile Image Display */}
@@ -217,10 +218,10 @@ export default function CreateUserForm() {
 
             <button
                 type="submit"
-                disabled={isSubmitting || pending}
+                disabled={isSubmitting}
                 className="h-10 w-full rounded-md bg-foreground text-background text-sm font-semibold hover:opacity-90 disabled:opacity-60"
             >
-                {isSubmitting || pending ? "Creating account..." : "Create account"}
+                {isSubmitting ? "Creating account..." : "Create account"}
             </button>
         </form>
     );

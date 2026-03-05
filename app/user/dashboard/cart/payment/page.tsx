@@ -7,7 +7,7 @@ import { usePayment, PaymentProvider } from "@/app/context/PaymentContext";
 import { useOrders } from "@/app/context/OrderContext";
 import { useAuth } from "@/app/context/AuthContext";
 import { CreateOrderDto } from "@/app/dtos/order.dto";
-import { PaymentDetails } from "@/app/lib/paymentApi";
+import { PaymentDetails, paymentApi } from "@/app/lib/paymentApi";
 import PaymentMethodSelector from "./components/PaymentMethodSelector";
 import CardPaymentForm from "./components/CardPaymentForm";
 
@@ -84,18 +84,35 @@ const PaymentPageContent = () => {
     setPaymentError(null);
 
     try {
-      const orderData: CreateOrderDto = {
-        foodItems: cartItems.map((item) => item._id),
-        status: "pending",
+      const paymentMethodMap: Record<string, string> = {
+        card: "card",
+        cod: "cash_on_delivery",
+        esewa: "esewa",
+        imepay: "imepay",
+        connectips: "connectips",
       };
 
-      await addOrder(orderData);
-      setOrderId("order-" + Date.now());
+      const paymentMethod = paymentMethodMap[selectedMethod?.type || "cod"];
 
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      const paymentData = {
+        foodItems: cartItems.map((item) => ({
+          foodId: item._id,
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity,
+        })),
+        totalAmount: grandTotal,
+        paymentMethod: paymentMethod,
+        transactionId: `TXN-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
+      };
 
-      const txId = `TXN-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
-      setTransactionId(txId);
+      const response = await paymentApi.processPayment(paymentData);
+
+      if (!response.success) {
+        throw new Error(response.message || "Payment failed");
+      }
+
+      setTransactionId(response.transactionId || paymentData.transactionId);
       setPaymentSuccess(true);
 
       clearCart();
@@ -103,9 +120,9 @@ const PaymentPageContent = () => {
       setTimeout(() => {
         router.push("/user/dashboard/orders");
       }, 2000);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Payment error:", error);
-      setPaymentError("Payment failed. Please try again.");
+      setPaymentError(error.response?.data?.message || "Payment failed. Please try again.");
     } finally {
       setIsProcessing(false);
     }

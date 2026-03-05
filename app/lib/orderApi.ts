@@ -18,8 +18,8 @@ export const orderApi = {
   },
 
   // User fetches own orders
-  getAllUserOrders: async (): Promise<OrderResponseDto[]> => {
-    const res = await axios.get(API.USER.ORDER.GET_USER_ORDERS, { withCredentials: true });
+  getAllUserOrders: async (userId: string): Promise<OrderResponseDto[]> => {
+    const res = await axios.get(`${API.USER.ORDER.GET_USER_ORDERS}${userId}`, { withCredentials: true });
     return res.data.data.map(mapOrder);
   },
 

@@ -1,6 +1,6 @@
 "use client";
 import { Controller, useForm } from "react-hook-form";
-import { UserData, UserSchema } from "@/app/admin/users/schema";
+import { UserData, UserSchema } from "@/app/admin/dashboard/users/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRef, useState, useTransition, useEffect } from "react";
 import { toast } from "react-toastify";
@@ -79,7 +79,12 @@ export default function UpdateUserForm() {
                 if (data.confirmPassword) formData.append('confirmPassword', data.confirmPassword);
                 if (data.image) formData.append('image', data.image);
 
-                await userApi.update(id, formData);
+                const result = await userApi.update(id, formData);
+                if (result.error) {
+                    toast.error(result.error);
+                    setError(result.error);
+                    return;
+                }
                 toast.success('User updated successfully');
             } catch (error: Error | any) {
                 toast.error(error.message || 'Update user failed');

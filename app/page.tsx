@@ -12,9 +12,13 @@ export default function Home() {
       {/* Header */}
       <header className="w-full flex justify-between items-center p-6 bg-white/80 backdrop-blur-sm shadow-sm fixed top-0 z-50">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-gradient-to-r from-orange-500 to-red-500 rounded-full flex items-center justify-center">
-            <span className="text-white font-bold text-xl">🍔</span>
-          </div>
+          <Image
+            src="/assets/icons/foodlogo.jpg"
+            alt="FoodWorld Logo"
+            width={40}
+            height={40}
+            className="rounded-full"
+          />
           <span className="text-2xl font-bold text-gray-800">FoodWorld</span>
         </div>
         <nav className="flex gap-4 items-center">
@@ -88,7 +92,7 @@ export default function Home() {
       <section className="grid md:grid-cols-3 gap-8 mt-16 px-6 max-w-6xl mx-auto">
         <div className="bg-white p-8 rounded-3xl shadow-lg hover:shadow-2xl transform hover:-translate-y-2 transition">
           <div className="w-16 h-16 bg-gradient-to-r from-orange-200 to-orange-400 rounded-full flex items-center justify-center mb-4">
-            <Image src="/assets/icons/fresh.svg" alt="Fresh Ingredients" width={32} height={32} />
+            <Image src="/assets/icons/gradient.jpg" alt="Fresh Ingredients" width={32} height={32} />
           </div>
           <h3 className="text-xl font-semibold mb-2">Fresh Ingredients</h3>
           <p className="text-gray-600">We use only the freshest ingredients sourced locally.</p>
@@ -96,7 +100,7 @@ export default function Home() {
 
         <div className="bg-white p-8 rounded-3xl shadow-lg hover:shadow-2xl transform hover:-translate-y-2 transition">
           <div className="w-16 h-16 bg-gradient-to-r from-blue-200 to-blue-400 rounded-full flex items-center justify-center mb-4">
-            <Image src="/assets/icons/delivery.svg" alt="Fast Delivery" width={32} height={32} />
+            <Image src="/assets/icons/delivery.jpg" alt="Fast Delivery" width={32} height={32} />
           </div>
           <h3 className="text-xl font-semibold mb-2">Fast Delivery</h3>
           <p className="text-gray-600">Get your food delivered in under 30 minutes.</p>
@@ -119,7 +123,7 @@ export default function Home() {
             <p className="text-gray-600 mb-4">"Amazing food and super fast delivery. Highly recommend!"</p>
             <div className="flex items-center gap-3">
               <Image
-                src="/assets/images/testimonials/user1.png"
+                src="/assets/icons/user.jpg"
                 alt="User 1"
                 width={40}
                 height={40}
@@ -150,13 +154,13 @@ export default function Home() {
           </div>
           <div className="flex justify-center gap-6 mt-4">
             <Link href="#" className="hover:text-orange-500 transition">
-              <Image src="/assets/icons/facebook.svg" alt="Facebook" width={24} height={24} />
+              <Image src="/assets/icons/facebook.jpg" alt="Facebook" width={24} height={24} />
             </Link>
             <Link href="#" className="hover:text-orange-500 transition">
-              <Image src="/assets/icons/instagram.svg" alt="Instagram" width={24} height={24} />
+              <Image src="/assets/icons/instagram.jpg" alt="Instagram" width={24} height={24} />
             </Link>
             <Link href="#" className="hover:text-orange-500 transition">
-              <Image src="/assets/icons/twitter.svg" alt="Twitter" width={24} height={24} />
+              <Image src="/assets/icons/twitter.jpg" alt="Twitter" width={24} height={24} />
             </Link>
           </div>
         </div>

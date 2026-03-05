@@ -1,4 +1,4 @@
-// frontend/app/user/food/components/FoodList.tsx
+
 "use client";
 import React from "react";
 import { FoodItem } from "../../../../context/FoodContext";

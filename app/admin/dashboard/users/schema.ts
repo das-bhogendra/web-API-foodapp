@@ -4,7 +4,7 @@ const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png"];
 
 export const UserSchema = z.object({
-    email: z.email({ message: "Enter a valid email" }),
+    email: z.string().email({ message: "Enter a valid email" }),
     password: z.string().min(6, { message: "Minimum 6 characters" }),
     confirmPassword: z.string().min(6, { message: "Minimum 6 characters" }),
     firstName: z.string().optional(),

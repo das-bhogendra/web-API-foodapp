@@ -1,7 +1,8 @@
 'use client';
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { userApi, User } from "../../lib/api/admin/user";
+import { User, userApi } from "@/app/lib/api/admin/user";
+
 
 const AdminUsersPage = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -27,6 +28,10 @@ const AdminUsersPage = () => {
 
     try {
       const res = await userApi.delete(id);
+      if (res.error) {
+        alert(res.error);
+        return;
+      }
       alert(res.message);
       setUsers(users.filter((user) => user._id !== id));
     } catch (err: any) {
@@ -47,7 +52,7 @@ const AdminUsersPage = () => {
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold text-gray-800">Manage Users</h1>
         <Link
-          href="/admin/users/create"
+          href="/admin/dashboard/users/create"
           className="bg-yellow-500 text-black px-4 py-2 rounded-lg font-medium hover:bg-yellow-600 transition"
         >
           + Create New User
@@ -91,7 +96,7 @@ const AdminUsersPage = () => {
                   </td>
                   <td className="px-6 py-4 flex gap-2">
                     <Link
-                      href={`/admin/users/${user._id}/edit`}
+                      href={`/admin/dashboard/users/${user._id}/edit`}
                       className="px-2 py-1 text-sm bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition"
                     >
                       Edit
