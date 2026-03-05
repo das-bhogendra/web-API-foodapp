@@ -1,41 +1,35 @@
-import express, { Application, Request, Response } from "express";
-import bodyParser from "body-parser";
+import express, { Application } from "express";
 import dotenv from "dotenv";
-import { connectionDatabase } from "./database/mongodb";
 import cors from "cors";
-
 import path from "path";
 
-dotenv.config();
-// Yo bhanda tala .env chalauna milcha
-console.log(process.env.PORT);
 import authRoutes from "./routes/auth.route";
 import adminUserRoutes from "./routes/admin/user.routes";
 import foodRoutes from "./routes/food.routes";
+import orderRoutes from "./routes/order.routes";
+import paymentRoutes from "./routes/payment.routes";
 
+dotenv.config();
 
 const app: Application = express();
 
-let corsOptions = {
-  origin: ["http://localhost:3000", "http://localhost:3003"],
-  // which url can access backend
-  // put your frontend domain/url here
-};
-// origin: "*",  // yo le sabai url lai access dincha
-app.use(cors(corsOptions));
+// Middleware
+app.use(cors({
+  origin: ["http://localhost:3000", "http://localhost:3003",'http://10.151.153.202:5005'],
+}));
 
-app.use("/uploads", express.static(path.join(__dirname, "../uploads"))); // static file serving
-app.use("/public", express.static(path.join(__dirname, "../public"))); // static file serving for food photos
+app.use(express.json()); // instead of bodyParser
 
-// const PORT: number = 3000;
+// Static
+app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
+app.use("/public", express.static(path.join(__dirname, "../public")));
 
-app.use(bodyParser.json());
-
+// Routes
 app.use("/api/auth", authRoutes);
-
 app.use("/api/admin/users", adminUserRoutes);
-
-app.use("/api/food", foodRoutes);
+app.use("/api/fooditems", foodRoutes);
+app.use("/api/orders", orderRoutes);
+app.use("/api/payment", paymentRoutes);
 
 
 export default app;

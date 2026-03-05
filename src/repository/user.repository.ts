@@ -42,7 +42,22 @@ export class UserRepository implements IUserRepository {
   }
 
   async getUserById(id: string): Promise<IUser | null> {
-    return await UserModel.findById(id);
+    // Ensure we're using a valid ObjectId format
+    console.log("[UserRepository] getUserById called with:", id);
+    console.log("[UserRepository] Type of id:", typeof id);
+    
+    if (!id || typeof id !== 'string') {
+      console.log("[UserRepository] Invalid ID - returning null");
+      return null;
+    }
+    try {
+      const user = await UserModel.findById(id);
+      console.log("[UserRepository] User found:", user ? user._id : null);
+      return user;
+    } catch (error: any) {
+      console.error("[UserRepository] Error finding user by ID:", error.message);
+      return null;
+    }
   }
 
   async getAllUsers(): Promise<IUser[]> {

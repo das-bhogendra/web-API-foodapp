@@ -11,4 +11,7 @@ export default {
         '!src/_tests_/**',
     ],
     setupFilesAfterEnv: ['<rootDir>/_tests_/setup.ts'],
+    maxWorkers: 1,  // Run tests serially to avoid race conditions
+    forceExit: true,  // Force exit after tests complete
+    testTimeout: 30000,  // Increase timeout for integration tests
 };

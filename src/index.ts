@@ -12,6 +12,7 @@ import orderRoutes from "./routes/order.routes";
 import foodRoutes from "./routes/food.routes";
 
 import { connectionDatabase } from "./database/mongodb";
+import paymentRoutes from "./routes/payment.routes";
 
 dotenv.config();
 
@@ -61,7 +62,7 @@ app.use("/api/categories", categoryRoutes);
 app.use("/api/orders", orderRoutes);
 
 app.use("/api/fooditems", foodRoutes);
-
+app.use("/api/payment", paymentRoutes);
 // =======================
 // GLOBAL ERROR HANDLER
 // =======================

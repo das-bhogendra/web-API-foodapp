@@ -98,27 +98,33 @@ declare global {
 
 const userRepository = new UserRepository();
 
-// ---------------- AUTHORIZED MIDDLEWARE ----------------
+
 export const authorizedMiddleware = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    // ✅ read token from Authorization header OR cookie
+    
     const token =
-      req.headers.authorization?.split(" ")[1] || req.cookies.auth_token;
+      req.headers.authorization?.split(" ")[1] || req.cookies?.auth_token;
 
     if (!token) throw new HttpError(401, "You must be logged in as admin");
 
-    // Decode token (using current JWT structure with 'id' instead of 'userId')
-    const decodedToken = jwt.verify(token, JWT_SECRET) as { id: string; role: string };
+    
+    const decodedToken = jwt.verify(token, JWT_SECRET) as { id?: string; userId?: string; role?: string };
 
-    if (!decodedToken?.id)
+    
+    const userId = decodedToken.id || decodedToken.userId;
+    
+    console.log("[AUTH] UserId from token:", userId); // 🔹 debug
+    
+    if (!userId)
       throw new HttpError(401, "Unauthorized: Token invalid");
 
-    // Fetch user by id from token
-    const user = await userRepository.getUserById(decodedToken.id);
+    
+    const user = await userRepository.getUserById(userId);
+    console.log("[AUTH] User from DB:", user); // 🔹 debug
     if (!user) throw new HttpError(401, "Unauthorized: User not found");
 
     req.user = user; // attach user to request
