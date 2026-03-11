@@ -7,20 +7,15 @@ export default function LoginForm() {
   const { register, handleSubmit, onSubmit, errors, isSubmitting, error } = useLoginForm();
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
 
-      
-      <h2 className="text-2xl font-semibold text-center text-gray-800">
-        Login Page
-      </h2>
-
-      
       <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1.5">Email</label>
         <input
           type="text"
-          placeholder="Username"
+          placeholder="Enter your email"
           {...register("email")}
-          className="w-full px-4 py-3 rounded-md bg-white/70 focus:outline-none focus:ring-2 focus:ring-orange-400"
+          className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
         />
         {errors.email && (
           <p className="text-red-500 text-sm mt-1">
@@ -29,13 +24,18 @@ export default function LoginForm() {
         )}
       </div>
 
-      
       <div>
+        <div className="flex justify-between items-center mb-1.5">
+          <label className="block text-sm font-medium text-gray-700">Password</label>
+          <Link href="#" className="text-sm text-orange-600 hover:text-orange-700">
+            Forgot password?
+          </Link>
+        </div>
         <input
           type="password"
-          placeholder="Password"
+          placeholder="Enter your password"
           {...register("password")}
-          className="w-full px-4 py-3 rounded-md bg-white/70 focus:outline-none focus:ring-2 focus:ring-orange-400"
+          className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
         />
         {errors.password && (
           <p className="text-red-500 text-sm mt-1">
@@ -46,7 +46,7 @@ export default function LoginForm() {
 
       {/* Error */}
       {error && (
-        <p className="text-red-600 text-sm text-center">
+        <p className="text-red-600 text-sm text-center bg-red-50 py-2 rounded-lg">
           {error}
         </p>
       )}
@@ -55,15 +55,15 @@ export default function LoginForm() {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="w-full bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-md transition duration-300"
+        className="w-full bg-orange-600 hover:bg-orange-700 text-white py-3.5 rounded-lg font-medium transition duration-200 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        {isSubmitting ? "Logging in..." : "Login"}
+        {isSubmitting ? "Signing in..." : "Sign In"}
       </button>
 
-      {/* Forgot Password */}
-      <div className="text-center text-sm text-gray-700">
-        <Link href="#" className="hover:underline">
-          Forgot Password
+      <div className="text-center text-gray-600">
+        Don't have an account?{" "}
+        <Link href="/auth/register" className="text-orange-600 hover:text-orange-700 font-medium">
+          Create one
         </Link>
       </div>
 

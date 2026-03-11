@@ -75,82 +75,100 @@ export default function RegisterForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
 
-      <h2 className="text-3xl font-semibold text-center text-gray-800">
-        Create Account
-      </h2>
-
       {error && (
-        <div className="bg-red-100 text-red-600 text-sm p-3 rounded-md text-center">
+        <div className="bg-red-50 text-red-600 text-sm p-3 rounded-lg text-center">
           {error}
         </div>
       )}
 
-      <input
-        type="text"
-        placeholder="Full Name *"
-        value={fullName}
-        onChange={(e) => setFullName(e.target.value)}
-        disabled={loading}
-        className="w-full px-4 py-3 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-orange-400"
-      />
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">Full Name</label>
+          <input
+            type="text"
+            placeholder="John Doe"
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
+            disabled={loading}
+            className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
+          />
+        </div>
 
-      <input
-        type="text"
-        placeholder="Username *"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-        disabled={loading}
-        className="w-full px-4 py-3 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-orange-400"
-      />
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">Username</label>
+          <input
+            type="text"
+            placeholder="johndoe"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            disabled={loading}
+            className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
+          />
+        </div>
+      </div>
 
-      <input
-        type="email"
-        placeholder="Email *"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        disabled={loading}
-        className="w-full px-4 py-3 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-orange-400"
-      />
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1.5">Email</label>
+        <input
+          type="email"
+          placeholder="john@example.com"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          disabled={loading}
+          className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
+        />
+      </div>
 
-      <input
-        type="text"
-        placeholder="Phone Number (optional)"
-        value={phoneNumber}
-        onChange={(e) => setPhoneNumber(e.target.value)}
-        disabled={loading}
-        className="w-full px-4 py-3 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-orange-400"
-      />
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1.5">Phone Number (Optional)</label>
+        <input
+          type="text"
+          placeholder="+1 234 567 8900"
+          value={phoneNumber}
+          onChange={(e) => setPhoneNumber(e.target.value)}
+          disabled={loading}
+          className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
+        />
+      </div>
 
-      <input
-        type="password"
-        placeholder="Password *"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        disabled={loading}
-        className="w-full px-4 py-3 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-orange-400"
-      />
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">Password</label>
+          <input
+            type="password"
+            placeholder="••••••••"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            disabled={loading}
+            className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
+          />
+        </div>
 
-      <input
-        type="password"
-        placeholder="Confirm Password *"
-        value={confirmPassword}
-        onChange={(e) => setConfirmPassword(e.target.value)}
-        disabled={loading}
-        className="w-full px-4 py-3 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-orange-400"
-      />
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">Confirm Password</label>
+          <input
+            type="password"
+            placeholder="••••••••"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            disabled={loading}
+            className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
+          />
+        </div>
+      </div>
 
       <button
         type="submit"
         disabled={loading}
-        className="w-full bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-md transition duration-300 font-medium disabled:opacity-50"
+        className="w-full bg-orange-600 hover:bg-orange-700 text-white py-3.5 rounded-lg font-medium transition duration-200 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        {loading ? 'Registering...' : 'Register'}
+        {loading ? 'Creating account...' : 'Create Account'}
       </button>
 
-      <div className="text-center text-sm text-gray-700">
+      <div className="text-center text-gray-600">
         Already have an account?{" "}
-        <Link href="/auth/login" className="text-orange-600 hover:underline">
-          Login
+        <Link href="/auth/login" className="text-orange-600 hover:text-orange-700 font-medium">
+          Sign in
         </Link>
       </div>
 
