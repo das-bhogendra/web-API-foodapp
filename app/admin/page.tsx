@@ -24,12 +24,7 @@ export default function DashboardHome() {
         This is your dashboard homepage. Use the links below to navigate.
       </p>
 
-      {/* Links to dummy blog section */}
-      <div className="space-y-2">
-        <Link href="/admin/dashboard/blogs" className="text-blue-600 underline">
-          View all blogs
-        </Link>
-      </div>
+      
 
       {/* Dummy dashboard cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">

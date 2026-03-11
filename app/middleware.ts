@@ -8,4 +8,6 @@ export function middleware(req: NextRequest) {
   if (!isAuth && (req.nextUrl.pathname.startsWith('/user/dashboard') || req.nextUrl.pathname.startsWith('/admin/dashboard'))) {
     return NextResponse.redirect(new URL('/auth/login', req.url));
   }
+
+  return NextResponse.next();
 }
