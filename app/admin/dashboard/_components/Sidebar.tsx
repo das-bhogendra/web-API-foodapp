@@ -10,7 +10,6 @@ const ADMIN_LINKS = [
   { href: "/admin/dashboard/orders", label: "Orders" },
   { href: "/admin/dashboard/users", label: "Users" },
   { href: "/admin/dashboard/categories", label: "Categories" },
-  { href: "/admin/dashboard/blogs", label: "Blogs" },
   { href: "/admin/dashboard/profile", label: "Profile" },
 ];
 
